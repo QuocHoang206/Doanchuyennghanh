@@ -2,23 +2,40 @@ import Product from "../model/productModel.js";
 
 export const createProducts = async (req, res) => {
   try {
-    const { title, price, description, color, category, size, stock, discount } = req.body;
+    const {
+      title,
+      price,
+      description,
+      color,
+      category,
+      size,
+      stock,
+      discount,
+    } = req.body;
 
     const parsedPrice = Number(price);
     const parsedStock = Number(stock);
     const parsedDiscount = Number(discount) || 0;
 
     if (isNaN(parsedPrice) || parsedPrice < 0)
-      return res.status(400).json({ success: false, message: "Giá không hợp lệ" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Giá không hợp lệ" });
 
     if (isNaN(parsedStock) || parsedStock < 0)
-      return res.status(400).json({ success: false, message: "Tồn kho không hợp lệ" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Tồn kho không hợp lệ" });
 
     if (parsedDiscount < 0 || parsedDiscount > 100)
-      return res.status(400).json({ success: false, message: "Giảm giá 0–100%" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Giảm giá 0–100%" });
 
     if (!title || !color || !category)
-      return res.status(400).json({ success: false, message: "Thiếu thông tin sản phẩm" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Thiếu thông tin sản phẩm" });
 
     let sizeArray = [];
     if (size && size.trim() !== "") {
@@ -29,7 +46,9 @@ export const createProducts = async (req, res) => {
     }
 
     if (!req.file)
-      return res.status(400).json({ success: false, message: "Thiếu hình ảnh!" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Thiếu hình ảnh!" });
 
     const product = await Product.create({
       title,
@@ -50,9 +69,6 @@ export const createProducts = async (req, res) => {
   }
 };
 
-
-
-
 export const readProduct = async (req, res) => {
   try {
     const products = await Product.find({ stock: { $gt: 0 } });
@@ -64,7 +80,6 @@ export const readProduct = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
-
 
 export const getProductById = async (req, res) => {
   try {
@@ -81,7 +96,6 @@ export const getProductById = async (req, res) => {
   }
 };
 
-
 export const updateProduct = async (req, res) => {
   try {
     const existing = await Product.findById(req.params.id);
@@ -94,21 +108,27 @@ export const updateProduct = async (req, res) => {
     if (body.price !== undefined) {
       const parsedPrice = Number(body.price);
       if (isNaN(parsedPrice) || parsedPrice < 0)
-        return res.status(400).json({ success: false, message: "Giá không hợp lệ" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Giá không hợp lệ" });
       body.price = parsedPrice;
     }
 
     if (body.stock !== undefined) {
       const parsedStock = Number(body.stock);
       if (isNaN(parsedStock) || parsedStock < 0)
-        return res.status(400).json({ success: false, message: "Tồn kho không hợp lệ" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Tồn kho không hợp lệ" });
       body.stock = parsedStock;
     }
 
     if (body.discount !== undefined) {
       const parsedDiscount = Number(body.discount);
       if (parsedDiscount < 0 || parsedDiscount > 100)
-        return res.status(400).json({ success: false, message: "Giảm giá 0–100%" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Giảm giá 0–100%" });
       body.discount = parsedDiscount;
     }
 
@@ -148,10 +168,6 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-
-
-
-
 export const deleteProduct = async (req, res) => {
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);
@@ -187,10 +203,7 @@ export const searchProducts = async (req, res) => {
 
     const products = await Product.find({
       stock: { $gt: 0 },
-      $or: [
-        { title: regex },
-        { color: regex },
-      ],
+      $or: [{ title: regex }, { color: regex }],
     });
 
     res.status(200).json({

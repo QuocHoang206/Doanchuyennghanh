@@ -14,15 +14,14 @@ function Pay() {
   const [ward, setWard] = useState("");
   const [payment, setPayment] = useState("cod");
 
-  /* ================= CART ================= */
   const getCartKey = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     return user ? `cart_user_${user._id}` : null;
   };
   const getBuyNowKey = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  return user ? `buy_now_cart_${user._id}` : null;
-};
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user ? `buy_now_cart_${user._id}` : null;
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -32,16 +31,15 @@ function Pay() {
     }
 
     const buyNowKey = getBuyNowKey();
-const normalKey = getCartKey();
+    const normalKey = getCartKey();
 
-let data = [];
+    let data = [];
 
-if (buyNowKey && localStorage.getItem(buyNowKey)) {
-  data = JSON.parse(localStorage.getItem(buyNowKey)) || [];
-} else {
-  data = JSON.parse(localStorage.getItem(normalKey)) || [];
-}
-
+    if (buyNowKey && localStorage.getItem(buyNowKey)) {
+      data = JSON.parse(localStorage.getItem(buyNowKey)) || [];
+    } else {
+      data = JSON.parse(localStorage.getItem(normalKey)) || [];
+    }
 
     if (data.length === 0) {
       navigate("/cart");
@@ -52,10 +50,8 @@ if (buyNowKey && localStorage.getItem(buyNowKey)) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ================= TOTAL ================= */
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  /* ================= ORDER ================= */
   const handleOrder = async () => {
     if (!email || !firstName || !lastName || !address) {
       alert("Vui lòng nhập đầy đủ thông tin!");
@@ -74,25 +70,24 @@ if (buyNowKey && localStorage.getItem(buyNowKey)) {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       await postApi.createOrder({
-        userId: user._id,   
+        userId: user._id,
         name: firstName + " " + lastName,
         email,
         address,
         district,
         ward,
         paymentMethod: payment,
-        items, // ✅ QUAN TRỌNG
+        items,
       });
       const buyNowKey = getBuyNowKey();
-if (buyNowKey) {
-  localStorage.removeItem(buyNowKey);
-}
+      if (buyNowKey) {
+        localStorage.removeItem(buyNowKey);
+      }
 
-      // clear cart
       const key = getCartKey();
       localStorage.removeItem(key);
 
-      alert("🎉 Đặt hàng thành công!");
+      alert(" Đặt hàng thành công!");
       navigate("/");
     } catch (err) {
       console.log(err);
@@ -102,7 +97,6 @@ if (buyNowKey) {
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10">
-      {/* FORM */}
       <div className="bg-white p-6 rounded shadow">
         <h2 className="text-2xl font-semibold mb-4">Thông tin giao hàng</h2>
 
@@ -184,7 +178,6 @@ if (buyNowKey) {
         </button>
       </div>
 
-      {/* SUMMARY */}
       <div className="bg-white p-6 rounded shadow h-fit">
         <h2 className="text-2xl font-semibold mb-4">Đơn hàng</h2>
 

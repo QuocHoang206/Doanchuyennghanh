@@ -26,7 +26,7 @@ export default function Banner() {
   }, [images]);
 
   if (images.length === 0) return null;
-  
+
   return (
     <div className="relative w-full h-[500px] overflow-hidden rounded-2xl shadow mb-14">
       {images.map((img, index) => (
@@ -52,9 +52,7 @@ export default function Banner() {
           </button>
 
           <button
-            onClick={() =>
-              setCurrent((prev) => (prev + 1) % images.length)
-            }
+            onClick={() => setCurrent((prev) => (prev + 1) % images.length)}
             className="absolute right-5 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded-full hover:bg-black/70"
           >
             ❯

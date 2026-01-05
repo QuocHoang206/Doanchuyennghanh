@@ -12,7 +12,7 @@ function OrderList() {
     const res = await postApi.getAllOrders();
     const allOrders = res.data.data || [];
 
-    // 🔒 chỉ lấy đơn của user đang login
+
     const myOrders = allOrders.filter(
   (o) => String(o.userId) === String(user._id)
 );
@@ -104,7 +104,6 @@ function OrderList() {
               Xem chi tiết
             </button>
 
-            {/* ❌ CHỈ CHO HỦY KHI CHỜ XÁC NHẬN */}
             {o.status === "Chờ xác nhận" && (
               <button
                 onClick={() => handleCancel(o._id)}

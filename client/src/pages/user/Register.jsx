@@ -17,17 +17,14 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // HANDLE INPUT
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // VALIDATE
     if (!form.name || !form.email || !form.phone || !form.address) {
       setError("Vui lòng nhập đầy đủ thông tin");
       return;
@@ -73,7 +70,6 @@ function Register() {
           Đăng ký tài khoản
         </h2>
 
-        {/* NAME */}
         <input
           type="text"
           name="name"
@@ -83,7 +79,6 @@ function Register() {
           className="w-full p-3 mb-3 border rounded focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* EMAIL */}
         <input
           type="email"
           name="email"
@@ -93,7 +88,6 @@ function Register() {
           className="w-full p-3 mb-3 border rounded focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* PHONE */}
         <input
           type="text"
           name="phone"
@@ -103,7 +97,6 @@ function Register() {
           className="w-full p-3 mb-3 border rounded focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* ADDRESS */}
         <input
           type="text"
           name="address"
@@ -113,7 +106,6 @@ function Register() {
           className="w-full p-3 mb-3 border rounded focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* PASSWORD */}
         <input
           type="password"
           name="password"
@@ -123,7 +115,6 @@ function Register() {
           className="w-full p-3 mb-3 border rounded focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* CONFIRM */}
         <input
           type="password"
           name="confirmPassword"
@@ -133,12 +124,10 @@ function Register() {
           className="w-full p-3 mb-3 border rounded focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* ERROR */}
         {error && (
           <p className="text-red-600 text-sm text-center mb-3">{error}</p>
         )}
 
-        {/* SUBMIT */}
         <button
           type="submit"
           disabled={loading}

@@ -1,6 +1,5 @@
 import Comment from "../model/commentModel.js";
 
-// GET comments theo product
 export const getCommentsByProduct = async (req, res) => {
   const { productId } = req.params;
   const comments = await Comment.find({ productId }).sort({
@@ -9,7 +8,6 @@ export const getCommentsByProduct = async (req, res) => {
   res.json({ success: true, data: comments });
 };
 
-// POST comment
 export const createComment = async (req, res) => {
   const { productId, content } = req.body;
   const user = req.user;

@@ -31,7 +31,6 @@ function SystemSetting() {
     });
   }, []);
 
-  // ===== UPLOAD BANNER (KHÔNG ĐỔI ACTIVE) =====
   const handleUploadBanner = async (file) => {
     const formData = new FormData();
     formData.append("banner", file);
@@ -46,8 +45,6 @@ function SystemSetting() {
       },
     }));
   };
-
-  // ===== CHỌN BANNER =====
   const updateActiveBanner = async (index) => {
     const newSetting = {
       ...setting,
@@ -62,20 +59,19 @@ function SystemSetting() {
   };
 
   const handleSave = async () => {
-  // ===== VALIDATE DISCOUNT =====
-  if (
-    setting.discount.enabled &&
-    (!setting.discount.startAt || !setting.discount.endAt)
-  ) {
-    alert("Vui lòng nhập đầy đủ thời gian bắt đầu và kết thúc giảm giá");
-    return;
-  }
+    if (
+      setting.discount.enabled &&
+      (!setting.discount.startAt || !setting.discount.endAt)
+    ) {
+      alert("Vui lòng nhập đầy đủ thời gian bắt đầu và kết thúc giảm giá");
+      return;
+    }
 
-  setLoading(true);
-  await postApi.updateSystemSetting(setting);
-  setLoading(false);
-  alert("Lưu cấu hình thành công!");
-};
+    setLoading(true);
+    await postApi.updateSystemSetting(setting);
+    setLoading(false);
+    alert("Lưu cấu hình thành công!");
+  };
 
   const handleDeleteBanner = async (index) => {
     const newList = setting.banner.list.filter((_, i) => i !== index);
@@ -103,7 +99,6 @@ function SystemSetting() {
     <div className="p-8 max-w-5xl">
       <h1 className="text-3xl font-bold mb-8 text-blue-700">System Setting</h1>
 
-      {/* ===== BANNER ===== */}
       <div className="bg-white shadow rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">
           Quản lý banner trang Home
@@ -125,7 +120,6 @@ function SystemSetting() {
                   : "border-transparent"
               }`}
             >
-              {/* ❌ NÚT XOÁ */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -136,7 +130,6 @@ function SystemSetting() {
                 ×
               </button>
 
-              {/* CLICK CHỌN BANNER */}
               <div onClick={() => updateActiveBanner(index)}>
                 <img
                   src={`http://localhost:3000${img}`}
@@ -153,7 +146,6 @@ function SystemSetting() {
         </div>
       </div>
 
-      {/* ===== DISCOUNT (GIỮ NGUYÊN) ===== */}
       <div className="bg-white shadow rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">Thời gian giảm giá</h2>
 

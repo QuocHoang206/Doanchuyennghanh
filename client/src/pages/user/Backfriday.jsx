@@ -34,14 +34,13 @@ function Blackfriday() {
     );
   }
 
-  const getFinalPrice = (p) =>
-    Math.round((p.price * (100 - p.discount)) / 100);
+  const getFinalPrice = (p) => Math.round((p.price * (100 - p.discount)) / 100);
 
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="bg-black text-white rounded-xl p-8 mb-6 text-center">
         <h1 className="text-4xl font-extrabold text-red-500">
-          🔥 BLACK FRIDAY SALE 🔥
+          BLACK FRIDAY SALE
         </h1>
 
         {setting?.discount?.endAt && (

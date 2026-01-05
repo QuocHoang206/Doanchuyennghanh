@@ -10,14 +10,12 @@ function Profile() {
 
   const [user, setUser] = useState(null);
 
-  // 🔐 CHECK LOGIN + LOAD USER
   useEffect(() => {
     if (!token || !storedUser) {
       navigate("/login");
       return;
     }
 
-    // chỉ cho xem profile của chính mình
     if (storedUser._id !== id) {
       navigate("/");
       return;

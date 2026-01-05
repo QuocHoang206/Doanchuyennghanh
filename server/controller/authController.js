@@ -7,7 +7,7 @@ const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, phone, address} = req.body;
+    const { name, email, password, phone, address } = req.body;
 
     const existing = await User.findOne({ email, phone });
     if (existing) {

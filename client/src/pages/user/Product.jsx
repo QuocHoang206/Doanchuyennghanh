@@ -16,7 +16,6 @@ function Product() {
   const [selectedColor, setSelectedColor] = useState("all");
   const [selectedSize, setSelectedSize] = useState("all");
 
-  // 🔍 SEARCH STATE
   const [keyword, setKeyword] = useState("");
   const [debouncedKeyword, setDebouncedKeyword] = useState("");
 
@@ -28,7 +27,6 @@ function Product() {
   const queryParams = new URLSearchParams(location.search);
   const categoryFromURL = queryParams.get("cat");
 
-  // 📌 LẤY CATEGORY TỪ URL
   useEffect(() => {
     if (categoryFromURL) {
       const mapped = categoryMap[categoryFromURL] || "all";
@@ -36,7 +34,6 @@ function Product() {
     }
   }, [categoryFromURL]);
 
-  // 📌 LOAD PRODUCTS
   useEffect(() => {
     postApi
       .getProducts()
@@ -44,7 +41,6 @@ function Product() {
       .catch((err) => console.error(err));
   }, []);
 
-  // ⏳ DEBOUNCE SEARCH
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedKeyword(keyword.trim().toLowerCase());
@@ -53,23 +49,19 @@ function Product() {
     return () => clearTimeout(timer);
   }, [keyword]);
 
-  // 🔎 FILTER PRODUCTS
   const filteredProducts = products
-    // SEARCH: tên hoặc màu
     .filter((p) =>
       debouncedKeyword === ""
         ? true
         : p.title.toLowerCase().includes(debouncedKeyword) ||
-          p.color.toLowerCase().includes(debouncedKeyword) 
+          p.color.toLowerCase().includes(debouncedKeyword)
     )
     // CATEGORY
     .filter((p) =>
       selectedCategory === "all" ? true : p.category === selectedCategory
     )
     // COLOR
-    .filter((p) =>
-      selectedColor === "all" ? true : p.color === selectedColor
-    )
+    .filter((p) => (selectedColor === "all" ? true : p.color === selectedColor))
     // SIZE
     .filter((p) =>
       selectedSize === "all" ? true : p.size.includes(selectedSize)
@@ -81,10 +73,9 @@ function Product() {
         Sản phẩm thể thao
       </h1>
 
-      {/* 🔍 SEARCH BAR */}
       <div className="relative mb-6">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-          🔍
+          Tìm sản phẩm...
         </span>
 
         <input
@@ -109,11 +100,9 @@ function Product() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* 🧩 FILTER SIDEBAR */}
         <aside className="border rounded-xl p-5 shadow bg-white h-fit md:col-span-1">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">Bộ lọc</h2>
 
-          {/* CATEGORY */}
           <div className="mb-6">
             <h3 className="font-semibold mb-2">Danh mục</h3>
             <ul className="space-y-2">
@@ -134,7 +123,6 @@ function Product() {
             </ul>
           </div>
 
-          {/* COLOR */}
           <div className="mb-6">
             <h3 className="font-semibold mb-2">Màu sắc</h3>
             <select
@@ -150,7 +138,6 @@ function Product() {
             </select>
           </div>
 
-          {/* SIZE */}
           <div className="mb-6">
             <h3 className="font-semibold mb-2">Size</h3>
             <select
@@ -167,7 +154,6 @@ function Product() {
           </div>
         </aside>
 
-        {/* 🛍 PRODUCT GRID */}
         <main className="md:col-span-3">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.length > 0 ? (

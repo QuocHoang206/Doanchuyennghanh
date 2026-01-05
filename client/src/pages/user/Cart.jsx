@@ -5,16 +5,15 @@ function Cart() {
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
 
-  /* ================== CART KEY THEO USER ================== */
   const getCartKey = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return null;
     return `cart_user_${user._id}`;
   };
   const getBuyNowKey = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  return user ? `buy_now_cart_${user._id}` : null;
-};
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user ? `buy_now_cart_${user._id}` : null;
+  };
 
   const getUserCart = () => {
     const key = getCartKey();
@@ -28,7 +27,7 @@ function Cart() {
     localStorage.setItem(key, JSON.stringify(cartData));
   };
 
-  /* ================== LOAD CART ================== */
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -36,10 +35,10 @@ function Cart() {
       return;
     }
     setCart(getUserCart());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ================== UPDATE QUANTITY ================== */
+
   const updateQuantity = (index, delta) => {
     const newCart = [...cart];
     newCart[index].quantity += delta;
@@ -52,11 +51,8 @@ function Cart() {
     saveUserCart(newCart);
   };
 
-  /* ================== TOTAL ================== */
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   if (cart.length === 0) {
     return (
@@ -71,10 +67,7 @@ function Cart() {
       <h1 className="text-2xl font-bold mb-6">Giỏ hàng</h1>
 
       {cart.map((item, i) => (
-        <div
-          key={i}
-          className="flex gap-4 items-center border-b py-4"
-        >
+        <div key={i} className="flex gap-4 items-center border-b py-4">
           <img
             src={`http://localhost:3000${item.image}`}
             alt={item.title}
@@ -113,18 +106,17 @@ function Cart() {
         Tổng: {total.toLocaleString()} đ
       </div>
       <button
-  onClick={() => {
-    const buyNowKey = getBuyNowKey();
-    if (buyNowKey) {
-      localStorage.removeItem(buyNowKey);
-    }
-    navigate("/pay");
-  }}
-  className="mt-4 w-full py-3 rounded-lg text-white text-lg bg-green-600 hover:bg-green-700"
->
-  Thanh toán
-</button>
-
+        onClick={() => {
+          const buyNowKey = getBuyNowKey();
+          if (buyNowKey) {
+            localStorage.removeItem(buyNowKey);
+          }
+          navigate("/pay");
+        }}
+        className="mt-4 w-full py-3 rounded-lg text-white text-lg bg-green-600 hover:bg-green-700"
+      >
+        Thanh toán
+      </button>
     </div>
   );
 }

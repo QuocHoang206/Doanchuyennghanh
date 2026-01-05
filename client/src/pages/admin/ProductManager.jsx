@@ -7,7 +7,7 @@ function ProductManager() {
   const [preview, setPreview] = useState(null);
   const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng"];
   const CATEGORIES = ["Giày", "Balo", "Bóng"];
-  
+
   const [form, setForm] = useState({
     title: "",
     price: "",

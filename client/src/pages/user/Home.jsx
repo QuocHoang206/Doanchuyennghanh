@@ -45,26 +45,21 @@ function Home() {
     return p.price;
   };
 
-  /* ================= FILTER ================= */
   const filterSaleByCategory = (cat) => {
-  const mapped = categoryMap[cat];
-  const discountActive = isDiscountActive();
+    const mapped = categoryMap[cat];
+    const discountActive = isDiscountActive();
 
-  return products.filter((p) => {
-    if (p.category?.toLowerCase() !== mapped.toLowerCase()) return false;
+    return products.filter((p) => {
+      if (p.category?.toLowerCase() !== mapped.toLowerCase()) return false;
 
-    // 🔥 BẬT GIẢM GIÁ → CHỈ HIỆN SP CÓ DISCOUNT
-    if (discountActive) {
-      return p.discount > 0;
-    }
+      if (discountActive) {
+        return p.discount > 0;
+      }
 
-    // 🔕 KHÔNG BẬT GIẢM GIÁ → CHỈ HIỆN SP KHÔNG GIẢM
-    return !p.discount || p.discount === 0;
-  });
-};
+      return !p.discount || p.discount === 0;
+    });
+  };
 
-
-  /* ================= RENDER SECTION ================= */
   const renderSection = (title, key) => {
     const list = filterSaleByCategory(key);
 
@@ -90,7 +85,6 @@ function Home() {
                 onClick={() => navigate(`/product/${p._id}`)}
                 className="bg-white rounded-xl shadow hover:shadow-xl transition cursor-pointer relative"
               >
-                {/* ===== BADGE (CHỈ KHI > 0) ===== */}
                 {isDiscountActive() && p.discount > 0 && (
                   <span className="absolute top-3 left-3 bg-red-600 text-white text-sm font-bold px-3 py-1 rounded-full">
                     -{p.discount}%
@@ -108,7 +102,6 @@ function Home() {
                     {p.title}
                   </h3>
 
-                  {/* ===== PRICE (ĐỒNG BỘ PRODUCT.JSX) ===== */}
                   <div className="mt-2">
                     {isDiscountActive() && p.discount > 0 ? (
                       <>
@@ -136,7 +129,6 @@ function Home() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* ===== BANNER ===== */}
       <Banner />
 
       <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-10">

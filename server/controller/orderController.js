@@ -64,21 +64,18 @@ export const updateOrderStatus = async (req, res) => {
     if (!order)
       return res.status(404).json({ message: "Order not found" });
 
-    // 🔒 ĐÃ HOÀN THÀNH → KHÔNG CHO SỬA GÌ NỮA
     if (order.status === "Hoàn thành") {
       return res.status(400).json({
         message: "Đơn hàng đã hoàn thành, không thể thay đổi",
       });
     }
 
-    // ❌ KHÔNG CHO HỦY NẾU ĐÃ XÁC NHẬN
     if (status === "Đã hủy" && order.status !== "Chờ xác nhận") {
       return res.status(400).json({
         message: "Không thể hủy đơn đã xác nhận",
       });
     }
 
-    // 🔥 TRỪ KHO KHI XÁC NHẬN
     if (status === "Đã xác nhận" && order.status === "Chờ xác nhận") {
       for (const item of order.items) {
         const product = await Product.findById(item.productId);
@@ -96,14 +93,13 @@ export const updateOrderStatus = async (req, res) => {
       }
     }
 
-    // ✅ CHỈ HOÀN THÀNH NẾU ĐÃ XÁC NHẬN
     if (status === "Hoàn thành") {
       if (order.status !== "Đã xác nhận") {
         return res.status(400).json({
           message: "Chỉ có thể hoàn thành đơn đã xác nhận",
         });
       }
-      order.completedAt = new Date(); // 🔥 DÒNG QUAN TRỌNG
+      order.completedAt = new Date();
     }
 
     order.status = status;
@@ -160,7 +156,7 @@ export const assignShipper = async (req, res) => {
       });
     }
 
-    // 🔥 TRỪ KHO
+
     for (const item of order.items) {
       const product = await Product.findById(item.productId);
       if (!product || product.stock < item.quantity) {

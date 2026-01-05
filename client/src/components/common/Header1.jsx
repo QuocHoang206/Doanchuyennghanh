@@ -10,7 +10,6 @@ function Header1() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  /* ================== LOAD USER ================== */
   useEffect(() => {
     if (token) {
       try {
@@ -30,7 +29,7 @@ function Header1() {
     }
   }, [token]);
 
-  /* ================== LOAD CART COUNT ================== */
+ 
   useEffect(() => {
     if (!user) {
       setCartCount(0);
@@ -47,7 +46,7 @@ function Header1() {
 
     loadCart();
 
-    // lắng nghe thay đổi cart
+  
     window.addEventListener("storage", loadCart);
     return () => window.removeEventListener("storage", loadCart);
   }, [user]);
@@ -64,12 +63,12 @@ function Header1() {
   return (
     <header className="bg-white shadow-md relative">
       <div className="flex items-center justify-between px-6 py-3">
-        {/* LOGO */}
+
         <Link to="/" className="text-2xl font-bold text-blue-800">
           SPORTSHOP
         </Link>
 
-        {/* MENU */}
+     
         <nav className="hidden md:flex space-x-8 text-gray-700 font-medium">
           <Link to="/" className="hover:text-blue-700">
             Trang chính
@@ -85,9 +84,9 @@ function Header1() {
           </Link>
         </nav>
 
-        {/* RIGHT */}
+        
         <div className="flex items-center gap-6 relative">
-          {/* 🛒 CART */}
+         
           {token && role !== "admin" && (
             <div
               onClick={() => navigate("/cart")}
@@ -120,7 +119,12 @@ function Header1() {
             </div>
           )}
 
-          {/* PROFILE / LOGIN */}
+         
+
+
+
+
+         
           {!token ? (
             <button
               onClick={() => navigate("/login")}

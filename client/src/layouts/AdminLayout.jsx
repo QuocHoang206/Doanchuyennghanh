@@ -4,7 +4,7 @@ function AdminLayout() {
   return (
     <div className="min-h-screen bg-gray-100 flex">
 
-      {/* FIXED SIDEBAR */}
+      
       <aside className="w-64 bg-white shadow-md p-6 fixed top-0 left-0 h-full z-50">
         <h2 className="text-2xl font-bold text-blue-700 mb-6">Admin Page</h2>
 

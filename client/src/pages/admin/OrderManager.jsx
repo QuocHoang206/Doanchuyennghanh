@@ -6,7 +6,6 @@ function OrderManager() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
 
-  // 🔽 THÊM CHO SHIPPER
   const [showShipModal, setShowShipModal] = useState(false);
   const [shipper, setShipper] = useState("");
 
@@ -23,14 +22,12 @@ function OrderManager() {
     loadOrders();
   }, []);
 
-  /* ================= HỦY ĐƠN (GIỮ NGUYÊN) ================= */
   const handleCancel = async (id) => {
     if (!confirm("Bạn có chắc muốn hủy đơn này?")) return;
     await postApi.cancelOrder(id);
     loadOrders();
   };
 
-  /* ================= CHỌN SHIPPER ================= */
   const confirmShip = async () => {
     if (!shipper) {
       alert("Vui lòng chọn đơn vị vận chuyển");
@@ -47,7 +44,6 @@ function OrderManager() {
     loadOrders();
   };
 
-  /* ================= HOÀN THÀNH ================= */
   const completeOrder = async (id) => {
     if (!confirm("Xác nhận đơn hàng đã giao xong?")) return;
     await postApi.completeOrder(id);
@@ -64,11 +60,10 @@ function OrderManager() {
         Quản lý đơn hàng
       </h1>
 
-      {/* SEARCH */}
       <div className="mb-4 flex justify-end">
         <input
           type="text"
-          placeholder="🔍 Tìm theo email..."
+          placeholder=" Tìm theo email..."
           value={searchEmail}
           onChange={(e) => setSearchEmail(e.target.value)}
           className="border px-4 py-2 rounded w-80"
@@ -106,7 +101,6 @@ function OrderManager() {
               <td className="p-3 border font-semibold">{o.status}</td>
 
               <td className="p-3 border space-y-2">
-                {/* XEM CHI TIẾT */}
                 <button
                   onClick={() => {
                     setSelectedOrder(o);
@@ -117,7 +111,6 @@ function OrderManager() {
                   Xem chi tiết
                 </button>
 
-                {/* CHỜ XÁC NHẬN → CHỌN SHIPPER */}
                 {o.status === "Chờ xác nhận" && (
                   <>
                     <button
@@ -130,7 +123,6 @@ function OrderManager() {
                       Xác nhận & giao
                     </button>
 
-                    {/* 🔴 GIỮ NÚT HỦY */}
                     <button
                       onClick={() => handleCancel(o._id)}
                       className="px-3 py-1 bg-red-500 text-white rounded w-full"
@@ -140,7 +132,6 @@ function OrderManager() {
                   </>
                 )}
 
-                {/* ĐANG GIAO */}
                 {o.status === "Đang giao" && (
                   <button
                     onClick={() => completeOrder(o._id)}
@@ -152,7 +143,7 @@ function OrderManager() {
 
                 {o.status === "Hoàn thành" && (
                   <span className="text-green-600 font-semibold text-sm">
-                    ✔ Đã hoàn thành
+                     Đã hoàn thành
                   </span>
                 )}
               </td>
@@ -161,13 +152,10 @@ function OrderManager() {
         </tbody>
       </table>
 
-      {/* ================= MODAL CHỌN SHIPPER ================= */}
       {showShipModal && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded w-80">
-            <h3 className="text-lg font-bold mb-4">
-              Chọn đơn vị vận chuyển
-            </h3>
+            <h3 className="text-lg font-bold mb-4">Chọn đơn vị vận chuyển</h3>
 
             <label className="flex gap-2 mb-2">
               <input
@@ -206,64 +194,73 @@ function OrderManager() {
           </div>
         </div>
       )}
-      {/* ================= MODAL XEM CHI TIẾT ĐƠN ================= */}
-{showDetail && selectedOrder && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 w-[600px] max-h-[80vh] overflow-y-auto">
-      <h3 className="text-xl font-bold mb-4 text-blue-600">
-        Chi tiết đơn hàng
-      </h3>
+      {showDetail && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-[600px] max-h-[80vh] overflow-y-auto">
+            <h3 className="text-xl font-bold mb-4 text-blue-600">
+              Chi tiết đơn hàng
+            </h3>
 
-      <div className="mb-4">
-        <p><b>Khách hàng:</b> {selectedOrder.name}</p>
-        <p><b>Email:</b> {selectedOrder.email}</p>
-        <p><b>Địa chỉ:</b> {selectedOrder.address}</p>
-        <p><b>Trạng thái:</b> {selectedOrder.status}</p>
-        <p><b>Vận chuyển:</b> {selectedOrder.ship ? selectedOrder.ship.toUpperCase() : "-"}</p>
-      </div>
+            <div className="mb-4">
+              <p>
+                <b>Khách hàng:</b> {selectedOrder.name}
+              </p>
+              <p>
+                <b>Email:</b> {selectedOrder.email}
+              </p>
+              <p>
+                <b>Địa chỉ:</b> {selectedOrder.address}
+              </p>
+              <p>
+                <b>Trạng thái:</b> {selectedOrder.status}
+              </p>
+              <p>
+                <b>Vận chuyển:</b>{" "}
+                {selectedOrder.ship ? selectedOrder.ship.toUpperCase() : "-"}
+              </p>
+            </div>
 
-      <table className="w-full border mb-4">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Sản phẩm</th>
-            <th className="border p-2">Size</th>
-            <th className="border p-2">SL</th>
-            <th className="border p-2">Giá</th>
-          </tr>
-        </thead>
-        <tbody>
-          {selectedOrder.items?.map((item, i) => (
-            <tr key={i} className="text-center">
-              <td className="border p-2">{item.title}</td>
-              <td className="border p-2">{item.size || "-"}</td>
-              <td className="border p-2">{item.quantity}</td>
-              <td className="border p-2">
-                {item.price.toLocaleString()} đ
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <table className="w-full border mb-4">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border p-2">Sản phẩm</th>
+                  <th className="border p-2">Size</th>
+                  <th className="border p-2">SL</th>
+                  <th className="border p-2">Giá</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedOrder.items?.map((item, i) => (
+                  <tr key={i} className="text-center">
+                    <td className="border p-2">{item.title}</td>
+                    <td className="border p-2">{item.size || "-"}</td>
+                    <td className="border p-2">{item.quantity}</td>
+                    <td className="border p-2">
+                      {item.price.toLocaleString()} đ
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-      <div className="text-right font-bold text-lg mb-4">
-        Tổng tiền: {selectedOrder.total.toLocaleString()} đ
-      </div>
+            <div className="text-right font-bold text-lg mb-4">
+              Tổng tiền: {selectedOrder.total.toLocaleString()} đ
+            </div>
 
-      <div className="flex justify-end">
-        <button
-          onClick={() => {
-            setShowDetail(false);
-            setSelectedOrder(null);
-          }}
-          className="px-4 py-2 bg-gray-600 text-white rounded"
-        >
-          Đóng
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setShowDetail(false);
+                  setSelectedOrder(null);
+                }}
+                className="px-4 py-2 bg-gray-600 text-white rounded"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

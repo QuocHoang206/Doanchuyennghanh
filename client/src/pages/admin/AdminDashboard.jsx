@@ -7,13 +7,11 @@ function AdminDashboard() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    postApi.statusOrder()
-      .then((res) => {
+    postApi.statusOrder().then((res) => {
       setStatusOrder(res.data.orderStatus);
     });
 
-    postApi.getAllOrders()
-    .then((res) => {
+    postApi.getAllOrders().then((res) => {
       setOrders(res.data.data);
     });
   }, []);

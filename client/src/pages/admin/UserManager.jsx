@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import postApi from "../../services/postService";
 
-
 function UserManager() {
   const [users, setUsers] = useState([]);
   const [editUser, setEditUser] = useState(null);
@@ -12,7 +11,8 @@ function UserManager() {
   });
 
   const loadUsers = () => {
-    postApi.getUsers({
+    postApi
+      .getUsers({
         headers: { Authorization: "Bearer " + localStorage.getItem("token") },
       })
       .then((res) => setUsers(res.data.users))
@@ -26,9 +26,10 @@ function UserManager() {
   const handleDelete = (id) => {
     if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
 
-    postApi.deleteUser(id, {
-      headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-    })
+    postApi
+      .deleteUser(id, {
+        headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      })
       .then(() => {
         alert("Xóa thành công!");
         loadUsers();
@@ -48,7 +49,8 @@ function UserManager() {
   const handleUpdate = (e) => {
     e.preventDefault();
 
-    postApi.updateUser(editUser, form, {
+    postApi
+      .updateUser(editUser, form, {
         headers: { Authorization: "Bearer " + localStorage.getItem("token") },
       })
       .then(() => {

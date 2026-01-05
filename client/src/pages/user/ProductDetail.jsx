@@ -10,11 +10,9 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
 
-  /* ===== COMMENT STATE ===== */
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
 
-  /* ================= LOAD PRODUCT ================= */
   useEffect(() => {
     postApi
       .readProduct(id)
@@ -35,7 +33,6 @@ function ProductDetail() {
       .catch(() => setProduct(null));
   }, [id]);
 
-  /* ================= LOAD COMMENTS ================= */
   useEffect(() => {
     postApi.getCommentsByProduct(id).then((res) => {
       setComments(res.data.data || []);
@@ -46,7 +43,6 @@ function ProductDetail() {
 
   const sizes = product.size || [];
 
-  /* ================= CART FUNCTIONS ================= */
   const getCartKey = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     return user ? `cart_user_${user._id}` : null;
@@ -64,7 +60,6 @@ function ProductDetail() {
     localStorage.setItem(key, JSON.stringify(cart));
   };
 
-  /* ================= ADD TO CART ================= */
   const handleAddToCart = () => {
     if (sizes.length > 0 && !selectedSize) {
       alert("Vui lòng chọn size!");
@@ -81,8 +76,7 @@ function ProductDetail() {
 
     const index = cart.findIndex(
       (item) =>
-        item.productId === product._id &&
-        item.size === (selectedSize || null)
+        item.productId === product._id && item.size === (selectedSize || null)
     );
 
     if (index !== -1) {
@@ -102,64 +96,59 @@ function ProductDetail() {
     alert("🛒 Đã thêm vào giỏ hàng");
   };
   const handleBuyNow = () => {
-  if (sizes.length > 0 && !selectedSize) {
-    alert("Vui lòng chọn size!");
-    return;
-  }
+    if (sizes.length > 0 && !selectedSize) {
+      alert("Vui lòng chọn size!");
+      return;
+    }
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    navigate("/login");
-    return;
-  }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) return;
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
 
-  const buyNowKey = `buy_now_cart_${user._id}`;
+    const buyNowKey = `buy_now_cart_${user._id}`;
 
-  const buyNowCart = [
-    {
-      productId: product._id,
-      title: product.title,
-      price: product.price,
-      image: product.image,
-      size: selectedSize || null,
-      quantity,
-    },
-  ];
+    const buyNowCart = [
+      {
+        productId: product._id,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+        size: selectedSize || null,
+        quantity,
+      },
+    ];
 
-  localStorage.setItem(buyNowKey, JSON.stringify(buyNowCart));
-  navigate("/pay");
-};
+    localStorage.setItem(buyNowKey, JSON.stringify(buyNowCart));
+    navigate("/pay");
+  };
 
-
-  /* ================= COMMENT HANDLER ================= */
   const handleSubmitComment = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Vui lòng đăng nhập để bình luận");
-    return;
-  }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Vui lòng đăng nhập để bình luận");
+      return;
+    }
 
-  if (!commentText.trim()) return;
+    if (!commentText.trim()) return;
 
-  const res = await postApi.createComment({
-    productId: product._id,
-    content: commentText,
-  });
+    const res = await postApi.createComment({
+      productId: product._id,
+      content: commentText,
+    });
 
-  // 🔥 THÊM COMMENT MỚI NGAY LẬP TỨC
-  setComments((prev) => [res.data.data, ...prev]);
+    setComments((prev) => [res.data.data, ...prev]);
 
-  setCommentText("");
-};
-
+    setCommentText("");
+  };
 
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* IMAGE */}
         <div>
           <img
             src={
@@ -172,7 +161,6 @@ function ProductDetail() {
           />
         </div>
 
-        {/* INFO */}
         <div>
           <h1 className="text-4xl font-bold">{product.title}</h1>
 
@@ -180,7 +168,6 @@ function ProductDetail() {
             {(product.price ?? 0).toLocaleString()} đ
           </p>
 
-          {/* SIZE */}
           <h3 className="mt-5 text-lg font-semibold">Chọn size:</h3>
           <div className="flex gap-3 flex-wrap mt-2">
             {sizes.length > 0 ? (
@@ -198,35 +185,31 @@ function ProductDetail() {
                 </button>
               ))
             ) : (
-              <p className="text-gray-500 text-sm">
-                Sản phẩm không có size
-              </p>
+              <p className="text-gray-500 text-sm">Sản phẩm không có size</p>
             )}
           </div>
 
           <p className="mt-4">
             <strong>Mô tả:</strong> {product.description || "-"}
           </p>
-            {/* QUANTITY */}
-<div className="flex items-center gap-4 mt-6">
-  <button
-    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-    className="px-4 py-2 border rounded"
-  >
-    -
-  </button>
+          <div className="flex items-center gap-4 mt-6">
+            <button
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              className="px-4 py-2 border rounded"
+            >
+              -
+            </button>
 
-  <span className="text-lg font-semibold">{quantity}</span>
+            <span className="text-lg font-semibold">{quantity}</span>
 
-  <button
-    onClick={() => setQuantity((q) => q + 1)}
-    className="px-4 py-2 border rounded"
-  >
-    +
-  </button>
-</div>
+            <button
+              onClick={() => setQuantity((q) => q + 1)}
+              className="px-4 py-2 border rounded"
+            >
+              +
+            </button>
+          </div>
 
-          {/* BUTTONS */}
           <button
             onClick={handleAddToCart}
             disabled={sizes.length > 0 && !selectedSize}
@@ -247,7 +230,6 @@ function ProductDetail() {
         </div>
       </div>
 
-      {/* ================= COMMENTS ================= */}
       <div className="mt-14 max-w-3xl">
         <h2 className="text-2xl font-bold mb-4">Bình luận</h2>
 
