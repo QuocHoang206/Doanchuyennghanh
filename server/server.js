@@ -11,7 +11,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin:["http://localhost:5173",
+  
+  ],
+  credentials:true,
+}
+
+));
 app.use(express.json());
 
 // Test 
@@ -32,6 +39,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/orders", orderRouter);
 app.use("/api/settings", systemRouter);
  app.use("/api/comments", commentRouter);
+
 app.listen(PORT, () => {
   console.log(`[SERVER] Server is running on http://localhost:${PORT}`);
 });
