@@ -6,7 +6,7 @@ function ProductManager() {
   const [products, setProducts] = useState([]);
   const [preview, setPreview] = useState(null);
 
-  const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng", "Hồng", ""];
+  const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng", "Hồng","Cam"];
   const CATEGORIES = ["Giày", "Balo", "Bóng"];
 
   const authConfig = {
@@ -37,12 +37,6 @@ function ProductManager() {
     loadProducts();
   }, []);
 
-  useEffect(() => {
-    if (form.category !== "Giày" && form.color) {
-      setForm((prev) => ({ ...prev, color: "" }));
-    }
-  }, [form.category]);
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -59,7 +53,7 @@ function ProductManager() {
       price: p.price,
       size: Array.isArray(p.size) ? p.size.join(",") : p.size || "",
       description: p.description,
-      color: p.color,
+      color: p.color || "",
       category: p.category,
       stock: p.stock,
       image: null,
@@ -78,20 +72,29 @@ function ProductManager() {
     e.preventDefault();
 
     const formData = new FormData();
-    Object.entries({
-      title: form.title,
-      description: form.description,
-      color: form.color,
-      category: form.category,
-      discount: form.discount,
-      price: Number(form.price),
-      stock: Number(form.stock),
-      size: form.size
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .join(","),
-    }).forEach(([k, v]) => formData.append(k, v));
+
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("category", form.category);
+    formData.append("discount", form.discount);
+    formData.append("price", Number(form.price));
+    formData.append("stock", Number(form.stock));
+
+    if (form.size) {
+      formData.append(
+        "size",
+        form.size
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .join(",")
+      );
+    }
+
+    // ✅ CHỈ gửi color nếu có chọn
+    if (form.color) {
+      formData.append("color", form.color);
+    }
 
     if (form.image instanceof File) {
       formData.append("image", form.image);
@@ -182,21 +185,19 @@ function ProductManager() {
           className="border p-2 rounded"
         />
 
-        {form.category === "Giày" && (
-          <select
-            name="color"
-            value={form.color}
-            onChange={handleChange}
-            className="border p-2 rounded"
-          >
-            <option value="">-- Không chọn màu --</option>
-            {COLORS.filter(Boolean).map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        )}
+        <select
+          name="color"
+          value={form.color}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        >
+          <option value="">-- Chọn màu --</option>
+          {COLORS.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
 
         <input
           type="file"
