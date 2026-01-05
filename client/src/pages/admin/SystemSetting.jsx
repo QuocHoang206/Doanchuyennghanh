@@ -4,16 +4,15 @@ import postApi from "../../services/postService";
 function SystemSetting() {
   const [loading, setLoading] = useState(false);
   const [setting, setSetting] = useState({
-    banner: {
-      list: [],
-      activeIndex: 0,
-    },
-    discount: {
-      enabled: false,
-      startAt: "",
-      endAt: "",
-    },
+    banner: { list: [], activeIndex: 0 },
+    discount: { enabled: false, startAt: "", endAt: "" },
   });
+
+  const authConfig = {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  };
 
   useEffect(() => {
     postApi.getSystemSetting().then((res) => {
@@ -22,10 +21,8 @@ function SystemSetting() {
         ...data,
         discount: {
           ...data.discount,
-          startAt: data.discount?.startAt
-            ? data.discount.startAt.slice(0, 16)
-            : "",
-          endAt: data.discount?.endAt ? data.discount.endAt.slice(0, 16) : "",
+          startAt: data.discount?.startAt?.slice(0, 16) || "",
+          endAt: data.discount?.endAt?.slice(0, 16) || "",
         },
       });
     });
@@ -35,7 +32,7 @@ function SystemSetting() {
     const formData = new FormData();
     formData.append("banner", file);
 
-    const res = await postApi.uploadBanner(formData);
+    const res = await postApi.uploadBanner(formData, authConfig);
 
     setSetting((prev) => ({
       ...prev,
@@ -45,56 +42,34 @@ function SystemSetting() {
       },
     }));
   };
+
   const updateActiveBanner = async (index) => {
     const newSetting = {
       ...setting,
-      banner: {
-        ...setting.banner,
-        activeIndex: index,
-      },
+      banner: { ...setting.banner, activeIndex: index },
     };
 
-    await postApi.updateSystemSetting(newSetting);
+    await postApi.updateSystemSetting(newSetting, authConfig);
     setSetting(newSetting);
   };
 
   const handleSave = async () => {
-    if (
-      setting.discount.enabled &&
-      (!setting.discount.startAt || !setting.discount.endAt)
-    ) {
-      alert("Vui lòng nhập đầy đủ thời gian bắt đầu và kết thúc giảm giá");
-      return;
-    }
-
     setLoading(true);
-    await postApi.updateSystemSetting(setting);
+    await postApi.updateSystemSetting(setting, authConfig);
     setLoading(false);
     alert("Lưu cấu hình thành công!");
   };
 
   const handleDeleteBanner = async (index) => {
-    const newList = setting.banner.list.filter((_, i) => i !== index);
-
-    let newActiveIndex = setting.banner.activeIndex;
-    if (index === setting.banner.activeIndex) {
-      newActiveIndex = 0;
-    } else if (index < setting.banner.activeIndex) {
-      newActiveIndex -= 1;
-    }
-
+    const list = setting.banner.list.filter((_, i) => i !== index);
     const newSetting = {
       ...setting,
-      banner: {
-        list: newList,
-        activeIndex: newActiveIndex,
-      },
+      banner: { list, activeIndex: 0 },
     };
 
-    await postApi.updateSystemSetting(newSetting);
+    await postApi.updateSystemSetting(newSetting, authConfig);
     setSetting(newSetting);
   };
-
   return (
     <div className="p-8 max-w-5xl">
       <h1 className="text-3xl font-bold mb-8 text-blue-700">System Setting</h1>
@@ -132,7 +107,7 @@ function SystemSetting() {
 
               <div onClick={() => updateActiveBanner(index)}>
                 <img
-                  src={`http://localhost:3000${img}`}
+                  src={img}
                   className="w-full h-40 object-cover"
                 />
                 {setting.banner.activeIndex === index && (

@@ -10,7 +10,7 @@ export default function Banner() {
       const setting = res.data?.data || res.data;
       if (setting?.banner?.list?.length > 0) {
         setImages(setting.banner.list);
-        setCurrent(setting.banner.activeIndex || 0);
+        setCurrent(setting.banner.activeIndex ?? 0);
       }
     });
   }, []);
@@ -28,13 +28,14 @@ export default function Banner() {
   if (images.length === 0) return null;
 
   return (
-    <div className="relative w-full h-[500px] overflow-hidden rounded-2xl shadow mb-14">
+    <div className="relative w-full h-[500px] overflow-hidden rounded-2xl shadow mb-14 bg-black">
       {images.map((img, index) => (
         <img
           key={index}
-          src={`http://localhost:3000${img}`}
+          src={img}
           alt={`Banner ${index}`}
-          className={`absolute inset-0 w-full h-full object-contain bg-black transition-opacity duration-700 ${
+          onError={(e) => (e.target.style.display = "none")}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
             index === current ? "opacity-100" : "opacity-0"
           }`}
         />

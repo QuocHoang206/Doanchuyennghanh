@@ -69,7 +69,7 @@ function Cart() {
       {cart.map((item, i) => (
         <div key={i} className="flex gap-4 items-center border-b py-4">
           <img
-            src={`http://localhost:3000${item.image}`}
+            src={item.image}
             alt={item.title}
             className="w-24 h-24 object-cover rounded"
           />

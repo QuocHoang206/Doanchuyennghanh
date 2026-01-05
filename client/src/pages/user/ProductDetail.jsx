@@ -93,7 +93,7 @@ function ProductDetail() {
     }
 
     saveUserCart(cart);
-    alert("🛒 Đã thêm vào giỏ hàng");
+    alert("Đã thêm vào giỏ hàng");
   };
   const handleBuyNow = () => {
     if (sizes.length > 0 && !selectedSize) {
@@ -151,11 +151,9 @@ function ProductDetail() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div>
           <img
-            src={
-              product.image
-                ? `http://localhost:3000${product.image}`
-                : "/no-img.png"
-            }
+            
+              src={product.image || "/no-img.png"}
+            
             alt={product.title}
             className="w-full h-96 object-cover rounded-xl"
           />

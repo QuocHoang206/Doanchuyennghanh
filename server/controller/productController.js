@@ -1,5 +1,5 @@
 import Product from "../model/productModel.js";
-
+import { uploadToCloudinary } from "../middleware/uploadMiddleware.js";
 export const createProducts = async (req, res) => {
   try {
     const {
@@ -49,7 +49,10 @@ export const createProducts = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Thiếu hình ảnh!" });
-
+      const result = await uploadToCloudinary(
+      req.file.buffer,
+      "products"
+    );
     const product = await Product.create({
       title,
       price: parsedPrice,
@@ -58,7 +61,7 @@ export const createProducts = async (req, res) => {
       category,
       size: sizeArray,
       stock: parsedStock,
-      image: "/uploads/" + req.file.filename,
+      image: result.secure_url, // ✅ CLOUDINARY URL
       discount: parsedDiscount,
     });
 
@@ -99,9 +102,10 @@ export const getProductById = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const existing = await Product.findById(req.params.id);
-    if (!existing) {
-      return res.status(404).json({ success: false, message: "Not Found" });
-    }
+    if (!existing)
+      return res
+        .status(404)
+        .json({ success: false, message: "Not Found" });
 
     const body = req.body;
 
@@ -132,7 +136,6 @@ export const updateProduct = async (req, res) => {
       body.discount = parsedDiscount;
     }
 
-    // ✅ SIZE ĐÚNG
     if (body.size !== undefined) {
       if (body.size.trim() === "") {
         body.size = [];
@@ -141,26 +144,29 @@ export const updateProduct = async (req, res) => {
           .split(",")
           .map((s) => s.trim())
           .filter((s) => !isNaN(s) && Number(s) > 0);
-
-        if (body.size.length === 0) {
-          return res.status(400).json({
-            success: false,
-            message: "Size không hợp lệ",
-          });
-        }
       }
     }
 
-    if (req.file) {
-      body.image = "/uploads/" + req.file.filename;
-    } else {
-      body.image = existing.image;
-    }
+    // ✅ CHỈ ĐỔI ẢNH NẾU CÓ FILE MỚI
+    // Nếu có file mới → upload file mới
+if (req.file) {
+  const result = await uploadToCloudinary(req.file.buffer, "products");
+  body.image = result.secure_url;
+}
+// Nếu KHÔNG có file mới nhưng ảnh cũ là /uploads → BÁO LỖI
+else if (existing.image && existing.image.startsWith("/uploads/")) {
+  return res.status(400).json({
+    success: false,
+    message: "Sản phẩm đang dùng ảnh local, vui lòng chọn lại ảnh để chuyển sang Cloudinary",
+  });
+}
 
-    const updated = await Product.findByIdAndUpdate(req.params.id, body, {
-      new: true,
-      runValidators: true,
-    });
+
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      body,
+      { new: true, runValidators: true }
+    );
 
     res.json({ success: true, data: updated });
   } catch (err) {

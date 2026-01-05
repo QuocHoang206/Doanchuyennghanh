@@ -1,4 +1,5 @@
 import SystemSetting from "../model/systemModel.js";
+import { uploadToCloudinary } from "../middleware/uploadMiddleware.js";
 
 export const getSystemSetting = async (req, res) => {
   try {
@@ -44,27 +45,38 @@ export const updateSystemSetting = async (req, res) => {
   }
 };
 
+
+
 export const uploadBanner = async (req, res) => {
   try {
-    const setting = await SystemSetting.findOne();
-    if (!setting)
-      return res.status(404).json({ message: "System setting not found" });
-
-    const imagePath = `/uploads/${req.file.filename}`;
-
-    if (!setting.banner.list) {
-      setting.banner.list = [];
-      setting.banner.activeIndex = 0;
+    if (!req.file) {
+      return res.status(400).json({ message: "Thiếu ảnh banner" });
     }
 
-    setting.banner.list.push(imagePath);
+    const setting = await SystemSetting.findOne();
+    if (!setting) {
+      return res.status(404).json({ message: "System setting not found" });
+    }
+
+    // ✅ UPLOAD CLOUDINARY
+    const result = await uploadToCloudinary(
+      req.file.buffer,
+      "banners"
+    );
+
+    if (!setting.banner) {
+      setting.banner = { list: [], activeIndex: 0 };
+    }
+
+    setting.banner.list.push(result.secure_url);
     await setting.save();
 
     res.json({
       success: true,
-      image: imagePath,
+      image: result.secure_url, // ✅ URL CLOUDINARY
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+

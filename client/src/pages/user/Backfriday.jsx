@@ -58,7 +58,7 @@ function Blackfriday() {
             className="bg-white rounded-xl shadow cursor-pointer"
           >
             <img
-              src={`http://localhost:3000${p.image}`}
+              src={p.image}
               className="h-56 w-full object-cover rounded-t-xl"
             />
             <div className="p-4">

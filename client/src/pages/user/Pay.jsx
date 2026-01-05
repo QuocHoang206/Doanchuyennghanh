@@ -16,11 +16,10 @@ function Pay() {
 
   const [payment, setPayment] = useState("cod");
 
-  // 🔐 QR CONTROL
+
   const [showQR, setShowQR] = useState(false);
   const [qrConfirmed, setQrConfirmed] = useState(false);
 
-  /* ================= CART KEY ================= */
   const getCartKey = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     return user ? `cart_user_${user._id}` : null;
@@ -31,7 +30,6 @@ function Pay() {
     return user ? `buy_now_cart_${user._id}` : null;
   };
 
-  /* ================= LOAD CART ================= */
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -63,9 +61,7 @@ function Pay() {
     0
   );
 
-  /* ================= HANDLE ORDER ================= */
   const handleOrder = async () => {
-    // 🔒 BLOCK QR IF NOT CONFIRMED
     if (payment === "qr" && !qrConfirmed) {
       alert("Vui lòng quét mã QR và xác nhận thanh toán!");
       return;
@@ -99,14 +95,14 @@ function Pay() {
         items,
       });
 
-      // 🧹 CLEAR CARTS
+
       const buyNowKey = getBuyNowKey();
       if (buyNowKey) localStorage.removeItem(buyNowKey);
 
       const cartKey = getCartKey();
       if (cartKey) localStorage.removeItem(cartKey);
 
-      alert("🎉 Đặt hàng thành công!");
+      alert(" Đặt hàng thành công!");
       navigate("/");
     } catch (err) {
       console.log(err);
@@ -211,7 +207,6 @@ function Pay() {
               Quét mã QR để thanh toán
             </h4>
 
-            {/* 👉 Đặt ảnh QR của bạn trong public/qr-demo.png */}
             <img
               src="/public/momo.jpg"
               alt="QR thanh toán"
@@ -220,7 +215,7 @@ function Pay() {
 
             <p className="text-sm text-gray-600 mt-2">
               Nội dung chuyển khoản:{" "}
-              <b>SPORTSHOP</b>
+              <b>QHSHOP</b>
             </p>
 
             {!qrConfirmed ? (
@@ -238,7 +233,6 @@ function Pay() {
           </div>
         )}
 
-        {/* ================= ORDER BUTTON ================= */}
         <button
           disabled={payment === "qr" && !qrConfirmed}
           onClick={handleOrder}
@@ -252,7 +246,6 @@ function Pay() {
         </button>
       </div>
 
-      {/* ================= RIGHT ================= */}
       <div className="bg-white p-6 rounded shadow h-fit">
         <h2 className="text-2xl font-semibold mb-4">Đơn hàng</h2>
 

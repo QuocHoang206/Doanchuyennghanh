@@ -5,8 +5,15 @@ import postApi from "../../services/postService";
 function ProductManager() {
   const [products, setProducts] = useState([]);
   const [preview, setPreview] = useState(null);
+
   const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng"];
   const CATEGORIES = ["Giày", "Balo", "Bóng"];
+
+  const authConfig = {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  };
 
   const [form, setForm] = useState({
     title: "",
@@ -23,10 +30,7 @@ function ProductManager() {
   const [editId, setEditId] = useState(null);
 
   const loadProducts = () => {
-    postApi
-      .getProducts()
-      .then((res) => setProducts(res.data.data))
-      .catch((err) => console.log(err));
+    postApi.getProducts().then((res) => setProducts(res.data.data));
   };
 
   useEffect(() => {
@@ -56,28 +60,32 @@ function ProductManager() {
       discount: p.discount,
     });
 
-    setPreview(`http://localhost:3000${p.image}`);
+    setPreview(p.image);
     setEditId(p._id);
   };
 
   const handleSubmit = async (e) => {
+    if (editId && !form.image) {
+  alert("⚠️ Khi sửa sản phẩm, bạn PHẢI chọn lại ảnh để chuyển sang Cloudinary");
+  return;
+}
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("title", form.title);
-    formData.append("description", form.description);
-    formData.append("color", form.color);
-    formData.append("category", form.category);
-    formData.append("discount", form.discount);
-
-    const cleanSize = form.size
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    formData.append("size", cleanSize.join(","));
-    formData.append("price", Number(form.price));
-    formData.append("stock", Number(form.stock));
+    Object.entries({
+      title: form.title,
+      description: form.description,
+      color: form.color,
+      category: form.category,
+      discount: form.discount,
+      price: Number(form.price),
+      stock: Number(form.stock),
+      size: form.size
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .join(","),
+    }).forEach(([k, v]) => formData.append(k, v));
 
     if (form.image instanceof File) {
       formData.append("image", form.image);
@@ -85,12 +93,12 @@ function ProductManager() {
 
     try {
       if (editId) {
-        await postApi.updateProduct(editId, formData);
+        await postApi.updateProduct(editId, formData, authConfig);
       } else {
-        await postApi.createProducts(formData);
+        await postApi.createProducts(formData, authConfig);
       }
 
-      alert(editId ? "Cập nhật thành công!" : "Thêm thành công!");
+      alert("Lưu sản phẩm thành công!");
       setEditId(null);
       setPreview(null);
       loadProducts();
@@ -102,17 +110,8 @@ function ProductManager() {
 
   const handleDelete = async (id) => {
     if (!confirm("Bạn có chắc muốn xóa?")) return;
-
-    try {
-      await postApi.deleteProduct(id, {
-        headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-      });
-
-      alert("Xóa thành công!");
-      loadProducts();
-    } catch {
-      alert("Lỗi khi xóa sản phẩm!");
-    }
+    await postApi.deleteProduct(id, authConfig);
+    loadProducts();
   };
 
   return (
@@ -256,7 +255,7 @@ function ProductManager() {
             <tr key={p._id} className="text-center border">
               <td className="p-3 border">
                 <img
-                  src={`http://localhost:3000${p.image}`}
+                  src={p.image}
                   className="w-16 h-16 object-cover mx-auto rounded"
                 />
               </td>
@@ -273,6 +272,7 @@ function ProductManager() {
               <td className="p-3 border">{p.stock}</td>
 
               <td className="p-3 border space-x-2">
+                
                 <button
                   onClick={() => handleEdit(p)}
                   className="px-3 py-1 bg-yellow-500 text-white rounded"

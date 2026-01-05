@@ -177,7 +177,7 @@ function Product() {
                     )}
 
                     <img
-                      src={`http://localhost:3000${item.image}`}
+                      src={ item.image}
                       className="w-full h-48 object-cover"
                       alt={item.title}
                     />

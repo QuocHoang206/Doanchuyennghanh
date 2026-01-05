@@ -92,7 +92,7 @@ function Home() {
                 )}
 
                 <img
-                  src={`http://localhost:3000${p.image}`}
+                  src={p.image}
                   alt={p.title}
                   className="w-full h-56 object-cover rounded-t-xl"
                 />

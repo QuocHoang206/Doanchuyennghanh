@@ -1,21 +1,18 @@
 import multer from "multer";
+import cloudinary from "../config/cloudinary.js";
 
+// Multer dùng memory (KHÔNG lưu local)
+const storage = multer.memoryStorage();
+export const upload = multer({ storage });
 
- 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); 
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
- 
-const fileFilter = (req, file, cb) => {
-  const allowed = ["image/jpeg", "image/png", "image/jpg"];
-  if (allowed.includes(file.mimetype)) cb(null, true);
-  else cb(new Error("File không hợp lệ"), false);
+// Upload buffer lên Cloudinary
+export const uploadToCloudinary = (buffer, folder) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({ folder }, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      })
+      .end(buffer);
+  });
 };
-
-export const upload = multer({ storage, fileFilter });

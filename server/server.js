@@ -35,7 +35,6 @@ mongoose
 // API Routes
 app.use("/api/products", productRouter);
 app.use("/api/auth", authRouter);
-app.use("/uploads", express.static("uploads"));
 app.use("/api/orders", orderRouter);
 app.use("/api/settings", systemRouter);
  app.use("/api/comments", commentRouter);
