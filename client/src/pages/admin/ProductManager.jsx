@@ -6,7 +6,7 @@ function ProductManager() {
   const [products, setProducts] = useState([]);
   const [preview, setPreview] = useState(null);
 
-  const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng", "Hồng",""];
+  const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng", "Hồng", ""];
   const CATEGORIES = ["Giày", "Balo", "Bóng"];
 
   const authConfig = {
@@ -38,10 +38,10 @@ function ProductManager() {
   }, []);
 
   useEffect(() => {
-  if (form.category !== "Giày" && form.color) {
-    setForm((prev) => ({ ...prev, color: "" }));
-  }
-}, [form.category]);
+    if (form.category !== "Giày" && form.color) {
+      setForm((prev) => ({ ...prev, color: "" }));
+    }
+  }, [form.category]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -72,9 +72,9 @@ function ProductManager() {
 
   const handleSubmit = async (e) => {
     if (editId && !form.image) {
-  alert("Vui lòng chọn lại ảnh, ảnh local không còn được hỗ trợ!");
-  return;
-}
+      alert("Vui lòng chọn lại ảnh, ảnh local không còn được hỗ trợ!");
+      return;
+    }
     e.preventDefault();
 
     const formData = new FormData();
@@ -180,25 +180,23 @@ function ProductManager() {
           value={form.size}
           onChange={handleChange}
           className="border p-2 rounded"
-          
         />
 
         {form.category === "Giày" && (
-  <select
-    name="color"
-    value={form.color}
-    onChange={handleChange}
-    className="border p-2 rounded"
-  >
-    <option value="">-- Không chọn màu --</option>
-    {COLORS.filter(Boolean).map((c) => (
-      <option key={c} value={c}>
-        {c}
-      </option>
-    ))}
-  </select>
-)}
-
+          <select
+            name="color"
+            value={form.color}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          >
+            <option value="">-- Không chọn màu --</option>
+            {COLORS.filter(Boolean).map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        )}
 
         <input
           type="file"
@@ -280,7 +278,6 @@ function ProductManager() {
               <td className="p-3 border">{p.stock}</td>
 
               <td className="p-3 border space-x-2">
-                
                 <button
                   onClick={() => handleEdit(p)}
                   className="px-3 py-1 bg-yellow-500 text-white rounded"

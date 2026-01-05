@@ -61,6 +61,10 @@ function Pay() {
       alert("Vui lòng quét mã QR và xác nhận thanh toán!");
       return;
     }
+    if (!/^\d{10}$/.test(phone)) {
+      alert("Số điện thoại phải đúng 10 chữ số");
+      return;
+    }
 
     if (!email || !firstName || !lastName || !address || !phone) {
       alert("Vui lòng nhập đầy đủ thông tin!");
@@ -102,6 +106,20 @@ function Pay() {
       alert("Lỗi đặt hàng!");
     }
   };
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
+
+    setEmail(user.email || "");
+    setAddress(user.address || "");
+    setPhone(user.phone || "");
+
+    if (user.name) {
+      const parts = user.name.trim().split(" ");
+      setFirstName(parts.slice(0, -1).join(" ") || "");
+      setLastName(parts.slice(-1).join(" "));
+    }
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -146,7 +164,12 @@ function Pay() {
           placeholder="Số điện thoại"
           className="border p-3 rounded w-full mb-4"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value.replace(/\D/g, "");
+            if (value.length <= 10) {
+              setPhone(value);
+            }
+          }}
         />
 
         <h3 className="font-semibold mt-4 mb-2">Phương thức thanh toán</h3>

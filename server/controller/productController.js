@@ -32,7 +32,8 @@ export const createProducts = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Giảm giá 0–100%" });
 
-    if (!title || !color || !category)
+    // ❗ KHÔNG ép color
+    if (!title || !category)
       return res
         .status(400)
         .json({ success: false, message: "Thiếu thông tin sản phẩm" });
@@ -49,19 +50,18 @@ export const createProducts = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Thiếu hình ảnh!" });
-      const result = await uploadToCloudinary(
-      req.file.buffer,
-      "products"
-    );
+
+    const result = await uploadToCloudinary(req.file.buffer, "products");
+
     const product = await Product.create({
       title,
       price: parsedPrice,
-      description,
-      color,
+      description: description || "",
+      color: color || "",
       category,
       size: sizeArray,
       stock: parsedStock,
-      image: result.secure_url, // ✅ CLOUDINARY URL
+      image: result.secure_url,
       discount: parsedDiscount,
     });
 
@@ -103,9 +103,7 @@ export const updateProduct = async (req, res) => {
   try {
     const existing = await Product.findById(req.params.id);
     if (!existing)
-      return res
-        .status(404)
-        .json({ success: false, message: "Not Found" });
+      return res.status(404).json({ success: false, message: "Not Found" });
 
     const body = req.body;
 
@@ -147,21 +145,17 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    
-if (!req.file && existing.image?.startsWith("/uploads")) {
-  return res.status(400).json({
-    success: false,
-    message: "Ảnh local không còn được hỗ trợ, vui lòng chọn lại ảnh",
-  });
-}
+    if (!req.file && existing.image?.startsWith("/uploads")) {
+      return res.status(400).json({
+        success: false,
+        message: "Ảnh local không còn được hỗ trợ, vui lòng chọn lại ảnh",
+      });
+    }
 
-
-
-    const updated = await Product.findByIdAndUpdate(
-      req.params.id,
-      body,
-      { new: true, runValidators: true }
-    );
+    const updated = await Product.findByIdAndUpdate(req.params.id, body, {
+      new: true,
+      runValidators: true,
+    });
 
     res.json({ success: true, data: updated });
   } catch (err) {
