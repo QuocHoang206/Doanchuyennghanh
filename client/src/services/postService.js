@@ -9,6 +9,7 @@ const postApi = {
   updateProduct: (id, data) => api.put(`/products/${id}`, data),
   deleteProduct: (id) => api.delete(`/products/${id}`),
   sreachProducts: (params) => api.get("/products/search", { params }),
+  
   // Order APIs
   createOrder: (data) => api.post("/orders", data),
   getAllOrders: () => api.get("/orders"),

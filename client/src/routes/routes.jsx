@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import Default from "../layouts/default.jsx";
+import Default from "../layouts/Default.jsx";
 import Home from "../pages/user/Home.jsx";
 import ProductDetail from "../pages/user/ProductDetail.jsx";
 import NotFound from "../pages/Notfound.jsx";
@@ -19,7 +19,7 @@ import CancelOrder from "../pages/admin/CancelOrder.jsx";
 import ProtectedPay from "./protectedPay.jsx";
 import Profile from "../pages/user/Profile.jsx";
 import Cart from "../pages/user/Cart.jsx";
-import Blackfriday from "../pages/user/BackFriday.jsx";
+import Blackfriday from "../pages/user/Backfriday.jsx";
 import OrderDetail from "../pages/user/Orderdetail.jsx";
 import OrderList from "../pages/user/Orderlist.jsx";
 export const router = createBrowserRouter([

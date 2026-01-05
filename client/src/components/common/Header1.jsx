@@ -65,7 +65,7 @@ function Header1() {
       <div className="flex items-center justify-between px-6 py-3">
 
         <Link to="/" className="text-2xl font-bold text-blue-800">
-          SPORTSHOP
+          QHSHOP
         </Link>
 
      
@@ -124,7 +124,7 @@ function Header1() {
 
 
 
-         
+
           {!token ? (
             <button
               onClick={() => navigate("/login")}
