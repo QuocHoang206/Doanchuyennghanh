@@ -147,19 +147,14 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    // ✅ CHỈ ĐỔI ẢNH NẾU CÓ FILE MỚI
-    // Nếu có file mới → upload file mới
-if (req.file) {
-  const result = await uploadToCloudinary(req.file.buffer, "products");
-  body.image = result.secure_url;
-}
-// Nếu KHÔNG có file mới nhưng ảnh cũ là /uploads → BÁO LỖI
-else if (existing.image && existing.image.startsWith("/uploads/")) {
+    
+if (!req.file && existing.image?.startsWith("/uploads")) {
   return res.status(400).json({
     success: false,
-    message: "Sản phẩm đang dùng ảnh local, vui lòng chọn lại ảnh để chuyển sang Cloudinary",
+    message: "Ảnh local không còn được hỗ trợ, vui lòng chọn lại ảnh",
   });
 }
+
 
 
     const updated = await Product.findByIdAndUpdate(

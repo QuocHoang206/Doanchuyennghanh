@@ -11,11 +11,9 @@ function Pay() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
+  const [phone, setPhone] = useState("");
 
   const [payment, setPayment] = useState("cod");
-
 
   const [showQR, setShowQR] = useState(false);
   const [qrConfirmed, setQrConfirmed] = useState(false);
@@ -56,10 +54,7 @@ function Pay() {
     setCart(data);
   }, [navigate]);
 
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleOrder = async () => {
     if (payment === "qr" && !qrConfirmed) {
@@ -67,7 +62,7 @@ function Pay() {
       return;
     }
 
-    if (!email || !firstName || !lastName || !address) {
+    if (!email || !firstName || !lastName || !address || !phone) {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
@@ -88,13 +83,11 @@ function Pay() {
         userId: user._id,
         name: firstName + " " + lastName,
         email,
+        phone,
         address,
-        district,
-        ward,
         paymentMethod: payment,
         items,
       });
-
 
       const buyNowKey = getBuyNowKey();
       if (buyNowKey) localStorage.removeItem(buyNowKey);
@@ -114,9 +107,7 @@ function Pay() {
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10">
       {/* ================= LEFT ================= */}
       <div className="bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-semibold mb-4">
-          Thông tin giao hàng
-        </h2>
+        <h2 className="text-2xl font-semibold mb-4">Thông tin giao hàng</h2>
 
         <input
           type="email"
@@ -150,29 +141,16 @@ function Pay() {
           value={address}
           onChange={(e) => setAddress(e.target.value)}
         />
+        <input
+          type="text"
+          placeholder="Số điện thoại"
+          className="border p-3 rounded w-full mb-4"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
 
-        <div className="grid grid-cols-2 gap-4 mb-3">
-          <input
-            type="text"
-            placeholder="Quận / Huyện"
-            className="border p-3 rounded"
-            value={district}
-            onChange={(e) => setDistrict(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Phường / Xã"
-            className="border p-3 rounded"
-            value={ward}
-            onChange={(e) => setWard(e.target.value)}
-          />
-        </div>
+        <h3 className="font-semibold mt-4 mb-2">Phương thức thanh toán</h3>
 
-        <h3 className="font-semibold mt-4 mb-2">
-          Phương thức thanh toán
-        </h3>
-
-        {/* COD */}
         <label className="flex items-center gap-2 mb-2">
           <input
             type="radio"
@@ -186,7 +164,6 @@ function Pay() {
           Thanh toán khi nhận hàng
         </label>
 
-        {/* QR */}
         <label className="flex items-center gap-2 mb-4">
           <input
             type="radio"
@@ -200,12 +177,9 @@ function Pay() {
           Chuyển khoản QR
         </label>
 
-        {/* ================= QR BLOCK ================= */}
         {payment === "qr" && showQR && (
           <div className="border rounded p-4 mb-4 text-center">
-            <h4 className="font-semibold mb-2">
-              Quét mã QR để thanh toán
-            </h4>
+            <h4 className="font-semibold mb-2">Quét mã QR để thanh toán</h4>
 
             <img
               src="/public/momo.jpg"
@@ -214,8 +188,7 @@ function Pay() {
             />
 
             <p className="text-sm text-gray-600 mt-2">
-              Nội dung chuyển khoản:{" "}
-              <b>QHSHOP</b>
+              Nội dung chuyển khoản: <b>QHSHOP</b>
             </p>
 
             {!qrConfirmed ? (
@@ -254,9 +227,7 @@ function Pay() {
             <span>
               {item.title} ({item.size || "-"}) × {item.quantity}
             </span>
-            <span>
-              {(item.price * item.quantity).toLocaleString()} đ
-            </span>
+            <span>{(item.price * item.quantity).toLocaleString()} đ</span>
           </div>
         ))}
 

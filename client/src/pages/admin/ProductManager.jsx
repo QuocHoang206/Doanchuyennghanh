@@ -6,7 +6,7 @@ function ProductManager() {
   const [products, setProducts] = useState([]);
   const [preview, setPreview] = useState(null);
 
-  const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng"];
+  const COLORS = ["Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng", "Hồng",""];
   const CATEGORIES = ["Giày", "Balo", "Bóng"];
 
   const authConfig = {
@@ -37,6 +37,12 @@ function ProductManager() {
     loadProducts();
   }, []);
 
+  useEffect(() => {
+  if (form.category !== "Giày" && form.color) {
+    setForm((prev) => ({ ...prev, color: "" }));
+  }
+}, [form.category]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -66,7 +72,7 @@ function ProductManager() {
 
   const handleSubmit = async (e) => {
     if (editId && !form.image) {
-  alert("⚠️ Khi sửa sản phẩm, bạn PHẢI chọn lại ảnh để chuyển sang Cloudinary");
+  alert("Vui lòng chọn lại ảnh, ảnh local không còn được hỗ trợ!");
   return;
 }
     e.preventDefault();
@@ -174,23 +180,25 @@ function ProductManager() {
           value={form.size}
           onChange={handleChange}
           className="border p-2 rounded"
-          required
+          
         />
 
-        <select
-          name="color"
-          value={form.color}
-          onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        >
-          <option value="">-- Chọn màu --</option>
-          {COLORS.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+        {form.category === "Giày" && (
+  <select
+    name="color"
+    value={form.color}
+    onChange={handleChange}
+    className="border p-2 rounded"
+  >
+    <option value="">-- Không chọn màu --</option>
+    {COLORS.filter(Boolean).map((c) => (
+      <option key={c} value={c}>
+        {c}
+      </option>
+    ))}
+  </select>
+)}
+
 
         <input
           type="file"

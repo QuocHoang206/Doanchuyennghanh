@@ -20,7 +20,7 @@ function Product() {
   const [debouncedKeyword, setDebouncedKeyword] = useState("");
 
   const categories = ["all", "Giày", "Balo", "Bóng"];
-  const colors = ["all", "Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng"];
+  const colors = ["all", "Đỏ", "Xanh lá", "Đen", "Trắng", "Vàng","Hồng"];
   const sizes = ["all", "38", "39", "40", "41", "42", "43", "44", "45"];
 
   const location = useLocation();
