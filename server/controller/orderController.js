@@ -14,8 +14,9 @@ export const createOrder = async (req, res) => {
     items.forEach((i) => {
       total += i.price * i.quantity;
     });
-
+    const userId = req.body.userId || null;
     const order = await Order.create({
+      userId,
       name,
       email,
       address,
@@ -139,3 +140,68 @@ export const getCancelledOrders = async (req, res) => {
   });
   res.json({ success: true, data: orders });
 };
+export const assignShipper = async (req, res) => {
+  try {
+    const { ship } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order)
+      return res.status(404).json({ message: "Order not found" });
+
+    if (order.status !== "Chờ xác nhận") {
+      return res.status(400).json({
+        message: "Chỉ xác nhận đơn đang chờ",
+      });
+    }
+
+    if (!["grab", "be"].includes(ship)) {
+      return res.status(400).json({
+        message: "Đơn vị vận chuyển không hợp lệ",
+      });
+    }
+
+    // 🔥 TRỪ KHO
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+      if (!product || product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Không đủ hàng cho ${item.title}`,
+        });
+      }
+      product.stock -= item.quantity;
+      await product.save();
+    }
+
+    order.ship = ship;
+    order.status = "Đang giao";
+    await order.save();
+
+    res.json({ success: true, data: order });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+  
+};
+export const completeOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order)
+      return res.status(404).json({ message: "Order not found" });
+
+    if (order.status !== "Đang giao") {
+      return res.status(400).json({
+        message: "Chỉ hoàn thành đơn đang giao",
+      });
+    }
+
+    order.status = "Hoàn thành";
+    order.completedAt = new Date();
+    await order.save();
+
+    res.json({ success: true, data: order });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+

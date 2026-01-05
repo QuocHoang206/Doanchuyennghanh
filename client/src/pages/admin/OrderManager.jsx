@@ -4,38 +4,56 @@ import postApi from "../../services/postService";
 function OrderManager() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [searchEmail, setSearchEmail] = useState(""); // 🔍 SEARCH EMAIL
+  const [showDetail, setShowDetail] = useState(false);
+
+  // 🔽 THÊM CHO SHIPPER
+  const [showShipModal, setShowShipModal] = useState(false);
+  const [shipper, setShipper] = useState("");
+
+  const [searchEmail, setSearchEmail] = useState("");
 
   const loadOrders = () => {
     postApi
       .getAllOrders()
       .then((res) => setOrders(res.data.data))
-      .catch((err) => console.log(err));
+      .catch(console.log);
   };
 
   useEffect(() => {
     loadOrders();
   }, []);
 
+  /* ================= HỦY ĐƠN (GIỮ NGUYÊN) ================= */
   const handleCancel = async (id) => {
     if (!confirm("Bạn có chắc muốn hủy đơn này?")) return;
     await postApi.cancelOrder(id);
     loadOrders();
   };
 
-  const updateStatus = async (id, status) => {
-    try {
-      await postApi.updateOrderStatus(id, { status });
-      alert("Cập nhật trạng thái thành công!");
-      loadOrders();
-    } catch (err) {
-      console.log(err);
-      alert("Lỗi cập nhật trạng thái!");
+  /* ================= CHỌN SHIPPER ================= */
+  const confirmShip = async () => {
+    if (!shipper) {
+      alert("Vui lòng chọn đơn vị vận chuyển");
+      return;
     }
+
+    await postApi.assignShipper(selectedOrder._id, {
+      ship: shipper,
+    });
+
+    setShowShipModal(false);
+    setSelectedOrder(null);
+    setShipper("");
+    loadOrders();
   };
 
-  // 🔎 FILTER THEO EMAIL
+  /* ================= HOÀN THÀNH ================= */
+  const completeOrder = async (id) => {
+    if (!confirm("Xác nhận đơn hàng đã giao xong?")) return;
+    await postApi.completeOrder(id);
+    loadOrders();
+  };
+
   const filteredOrders = orders.filter((o) =>
     o.email.toLowerCase().includes(searchEmail.toLowerCase())
   );
@@ -46,24 +64,23 @@ function OrderManager() {
         Quản lý đơn hàng
       </h1>
 
-      {/* 🔍 SEARCH BAR */}
+      {/* SEARCH */}
       <div className="mb-4 flex justify-end">
         <input
           type="text"
-          placeholder="🔍 Tìm theo email khách hàng..."
+          placeholder="🔍 Tìm theo email..."
           value={searchEmail}
           onChange={(e) => setSearchEmail(e.target.value)}
-          className="border px-4 py-2 rounded w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border px-4 py-2 rounded w-80"
         />
       </div>
 
-      <table className="w-full border-collapse bg-white shadow">
+      <table className="w-full border bg-white shadow">
         <thead>
           <tr className="bg-blue-600 text-white">
             <th className="p-3 border">Khách hàng</th>
-            <th className="p-3 border">Số SP</th>
-            <th className="p-3 border">Thanh toán</th>
             <th className="p-3 border">Tổng tiền</th>
+            <th className="p-3 border">Vận chuyển</th>
             <th className="p-3 border">Trạng thái</th>
             <th className="p-3 border">Hành động</th>
           </tr>
@@ -78,14 +95,12 @@ function OrderManager() {
                 <span className="text-sm text-gray-600">{o.email}</span>
               </td>
 
-              <td className="p-3 border">{o.items.length}</td>
-
-              <td className="p-3 border">
-                {o.paymentMethod === "cod" ? "COD" : "QR Banking"}
-              </td>
-
               <td className="p-3 border font-semibold">
                 {o.total.toLocaleString()} đ
+              </td>
+
+              <td className="p-3 border">
+                {o.ship ? o.ship.toUpperCase() : "-"}
               </td>
 
               <td className="p-3 border font-semibold">{o.status}</td>
@@ -95,46 +110,48 @@ function OrderManager() {
                 <button
                   onClick={() => {
                     setSelectedOrder(o);
-                    setShowModal(true);
+                    setShowDetail(true);
                   }}
-                  className="px-3 py-1 bg-blue-500 text-white rounded block w-full"
+                  className="px-3 py-1 bg-blue-500 text-white rounded w-full"
                 >
                   Xem chi tiết
                 </button>
 
-                {/* XÁC NHẬN */}
+                {/* CHỜ XÁC NHẬN → CHỌN SHIPPER */}
                 {o.status === "Chờ xác nhận" && (
-                  <button
-                    onClick={() => updateStatus(o._id, "Đã xác nhận")}
-                    className="px-3 py-1 bg-yellow-500 text-white rounded block w-full"
-                  >
-                    Xác nhận
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        setSelectedOrder(o);
+                        setShowShipModal(true);
+                      }}
+                      className="px-3 py-1 bg-yellow-500 text-white rounded w-full"
+                    >
+                      Xác nhận & giao
+                    </button>
+
+                    {/* 🔴 GIỮ NÚT HỦY */}
+                    <button
+                      onClick={() => handleCancel(o._id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded w-full"
+                    >
+                      Hủy đơn
+                    </button>
+                  </>
                 )}
 
-                {/* HOÀN THÀNH */}
-                {o.status === "Đã xác nhận" && (
+                {/* ĐANG GIAO */}
+                {o.status === "Đang giao" && (
                   <button
-                    onClick={() => updateStatus(o._id, "Hoàn thành")}
-                    className="px-3 py-1 bg-green-600 text-white rounded block w-full"
+                    onClick={() => completeOrder(o._id)}
+                    className="px-3 py-1 bg-green-600 text-white rounded w-full"
                   >
                     Hoàn thành
                   </button>
                 )}
 
-                {/* HỦY */}
-                {o.status === "Chờ xác nhận" && (
-                  <button
-                    onClick={() => handleCancel(o._id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded block w-full"
-                  >
-                    Hủy đơn
-                  </button>
-                )}
-
-                {/* HOÀN THÀNH → KHÓA */}
                 {o.status === "Hoàn thành" && (
-                  <span className="block text-green-600 font-semibold text-sm">
+                  <span className="text-green-600 font-semibold text-sm">
                     ✔ Đã hoàn thành
                   </span>
                 )}
@@ -144,57 +161,111 @@ function OrderManager() {
         </tbody>
       </table>
 
-      {filteredOrders.length === 0 && (
-        <p className="text-center mt-4 text-gray-600">
-          Không tìm thấy đơn hàng phù hợp
-        </p>
-      )}
-
-      {/* ================= MODAL CHI TIẾT ================= */}
-      {showModal && selectedOrder && (
+      {/* ================= MODAL CHỌN SHIPPER ================= */}
+      {showShipModal && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-xl rounded-lg p-6 relative">
-            <button
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
-              onClick={() => setShowModal(false)}
-            >
-              ✕
-            </button>
+          <div className="bg-white p-6 rounded w-80">
+            <h3 className="text-lg font-bold mb-4">
+              Chọn đơn vị vận chuyển
+            </h3>
 
-            <h2 className="text-2xl font-bold mb-4">
-              Chi tiết đơn hàng
-            </h2>
+            <label className="flex gap-2 mb-2">
+              <input
+                type="radio"
+                value="grab"
+                checked={shipper === "grab"}
+                onChange={(e) => setShipper(e.target.value)}
+              />
+              Grab
+            </label>
 
-            {selectedOrder.items.map((item, idx) => (
-              <div key={idx} className="flex gap-4 border-b py-3">
-                <img
-                  src={`http://localhost:3000${item.image}`}
-                  className="w-20 h-20 object-cover rounded border"
-                />
+            <label className="flex gap-2 mb-4">
+              <input
+                type="radio"
+                value="be"
+                checked={shipper === "be"}
+                onChange={(e) => setShipper(e.target.value)}
+              />
+              Be
+            </label>
 
-                <div>
-                  <p className="font-semibold">{item.title}</p>
-                  <p>Size: {item.size}</p>
-                  <p>SL: {item.quantity}</p>
-                  <p className="text-red-600 font-bold">
-                    {(item.price * item.quantity).toLocaleString()} đ
-                  </p>
-                </div>
-              </div>
-            ))}
-
-            <div className="mt-4 flex justify-between text-lg font-semibold">
-              <span>Tổng tiền</span>
-              <span className="text-red-600">
-                {selectedOrder.total.toLocaleString()} đ
-              </span>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowShipModal(false)}
+                className="border px-3 py-1 rounded"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={confirmShip}
+                className="bg-blue-600 text-white px-3 py-1 rounded"
+              >
+                Xác nhận giao
+              </button>
             </div>
           </div>
         </div>
       )}
+      {/* ================= MODAL XEM CHI TIẾT ĐƠN ================= */}
+{showDetail && selectedOrder && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 w-[600px] max-h-[80vh] overflow-y-auto">
+      <h3 className="text-xl font-bold mb-4 text-blue-600">
+        Chi tiết đơn hàng
+      </h3>
+
+      <div className="mb-4">
+        <p><b>Khách hàng:</b> {selectedOrder.name}</p>
+        <p><b>Email:</b> {selectedOrder.email}</p>
+        <p><b>Địa chỉ:</b> {selectedOrder.address}</p>
+        <p><b>Trạng thái:</b> {selectedOrder.status}</p>
+        <p><b>Vận chuyển:</b> {selectedOrder.ship ? selectedOrder.ship.toUpperCase() : "-"}</p>
+      </div>
+
+      <table className="w-full border mb-4">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border p-2">Sản phẩm</th>
+            <th className="border p-2">Size</th>
+            <th className="border p-2">SL</th>
+            <th className="border p-2">Giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          {selectedOrder.items?.map((item, i) => (
+            <tr key={i} className="text-center">
+              <td className="border p-2">{item.title}</td>
+              <td className="border p-2">{item.size || "-"}</td>
+              <td className="border p-2">{item.quantity}</td>
+              <td className="border p-2">
+                {item.price.toLocaleString()} đ
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="text-right font-bold text-lg mb-4">
+        Tổng tiền: {selectedOrder.total.toLocaleString()} đ
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          onClick={() => {
+            setShowDetail(false);
+            setSelectedOrder(null);
+          }}
+          className="px-4 py-2 bg-gray-600 text-white rounded"
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
 
 export default OrderManager;
-  

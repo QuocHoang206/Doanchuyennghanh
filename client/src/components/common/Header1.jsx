@@ -88,7 +88,7 @@ function Header1() {
         {/* RIGHT */}
         <div className="flex items-center gap-6 relative">
           {/* 🛒 CART */}
-          {token && (
+          {token && role !== "admin" && (
             <div
               onClick={() => navigate("/cart")}
               className="relative cursor-pointer"
@@ -151,6 +151,15 @@ function Header1() {
                   >
                     Thông tin cá nhân
                   </Link>
+                  {role !== "admin" && (
+                    <Link
+                      to="/order"
+                      onClick={() => setOpenProfile(false)}
+                      className="block px-4 py-2 hover:bg-gray-100"
+                    >
+                      Đơn hàng của tôi
+                    </Link>
+                  )}
 
                   {role === "admin" && (
                     <Link

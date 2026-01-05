@@ -30,6 +30,10 @@ const postApi = {
   // Comment APIs
   getCommentsByProduct: (productId) => api.get(`/comments/${productId}`),
   createComment: (data) => api.post("/comments", data),
+
+  // Shipper APIs
+  assignShipper: (orderId, data) => api.put(`/orders/${orderId}/shipper`, data),
+  completeOrder: (orderId) => api.put(`/orders/${orderId}/complete`),
 };
 
 export default postApi;

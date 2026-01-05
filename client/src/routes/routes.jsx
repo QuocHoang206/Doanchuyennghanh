@@ -20,55 +20,57 @@ import ProtectedPay from "./protectedPay.jsx";
 import Profile from "../pages/user/Profile.jsx";
 import Cart from "../pages/user/Cart.jsx";
 import Blackfriday from "../pages/user/BackFriday.jsx";
-
+import OrderDetail from "../pages/user/Orderdetail.jsx";
+import OrderList from "../pages/user/Orderlist.jsx";
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Default />,
     errorElement: <NotFound />,
     children: [
-      { index: true, 
-        element: <Home />, 
-      },
-      { path: "product",
-         element: <Product />,
-      },
-      { path: "product/:id",
-        element: <ProductDetail />, 
-      },
-      { 
+      { index: true, element: <Home /> },
+      { path: "product", element: <Product /> },
+      { path: "product/:id", element: <ProductDetail /> },
+      {
         path: "login",
-         element: <Login />,
+        element: <Login />,
       },
-      { 
+      {
         path: "register",
-         element: <Register />,
+        element: <Register />,
       },
       {
-         path: "aboutus",
-         element: <AboutUs />, 
+        path: "aboutus",
+        element: <AboutUs />,
       },
       {
-        path:"profile/:id",
-        element: <Profile/>,
+        path: "profile/:id",
+        element: <Profile />,
       },
       {
         element: <ProtectedPay />,
-        children: 
-        [
-      {
-        path: "/pay",
-        element: <Pay />,
-      },
+        children: [
+          {
+            path: "pay",
+            element: <Pay />,
+          },
         ],
       },
       {
-        path: "/cart",
+        path: "cart",
         element: <Cart />,
       },
-      { 
+      {
         path: "blackfriday",
-         element: <Blackfriday />, 
+        element: <Blackfriday />,
+      },
+      {
+        path: "order",
+        element: <OrderList />,
+      },
+      {
+        path: "order/:id",
+        element: <OrderDetail />,
       },
     ],
   },
@@ -106,7 +108,6 @@ export const router = createBrowserRouter([
         path: "canceledorders",
         element: <CancelOrder />,
       },
-
     ],
   },
 ]);

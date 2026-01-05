@@ -19,6 +19,10 @@ function Pay() {
     const user = JSON.parse(localStorage.getItem("user"));
     return user ? `cart_user_${user._id}` : null;
   };
+  const getBuyNowKey = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user ? `buy_now_cart_${user._id}` : null;
+};
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -27,8 +31,17 @@ function Pay() {
       return;
     }
 
-    const key = getCartKey();
-    const data = JSON.parse(localStorage.getItem(key)) || [];
+    const buyNowKey = getBuyNowKey();
+const normalKey = getCartKey();
+
+let data = [];
+
+if (buyNowKey && localStorage.getItem(buyNowKey)) {
+  data = JSON.parse(localStorage.getItem(buyNowKey)) || [];
+} else {
+  data = JSON.parse(localStorage.getItem(normalKey)) || [];
+}
+
 
     if (data.length === 0) {
       navigate("/cart");
@@ -59,7 +72,9 @@ function Pay() {
     }));
 
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
       await postApi.createOrder({
+        userId: user._id,   
         name: firstName + " " + lastName,
         email,
         address,
@@ -68,6 +83,10 @@ function Pay() {
         paymentMethod: payment,
         items, // ✅ QUAN TRỌNG
       });
+      const buyNowKey = getBuyNowKey();
+if (buyNowKey) {
+  localStorage.removeItem(buyNowKey);
+}
 
       // clear cart
       const key = getCartKey();

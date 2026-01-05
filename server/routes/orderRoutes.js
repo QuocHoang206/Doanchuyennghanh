@@ -5,7 +5,9 @@ import {
   statusOrder,
   updateOrderStatus,
   cancelOrder,
-  getCancelledOrders
+  getCancelledOrders,
+  assignShipper,
+  completeOrder
 } from "../controller/orderController.js";
 
 const router = express.Router();
@@ -16,5 +18,7 @@ router.get("/", getAllOrders);
 router.put("/:id/status", updateOrderStatus);
 router.put("/:id/cancel", cancelOrder);
 router.get("/cancelled", getCancelledOrders);
- 
+router.put("/:id/shipper", assignShipper);
+router.put("/:id/complete", completeOrder);
+
 export default router;

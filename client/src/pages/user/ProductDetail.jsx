@@ -8,6 +8,7 @@ function ProductDetail() {
 
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   /* ===== COMMENT STATE ===== */
   const [comments, setComments] = useState([]);
@@ -85,7 +86,7 @@ function ProductDetail() {
     );
 
     if (index !== -1) {
-      cart[index].quantity += 1;
+      cart[index].quantity += quantity;
     } else {
       cart.push({
         productId: product._id,
@@ -93,13 +94,45 @@ function ProductDetail() {
         price: product.price,
         image: product.image,
         size: selectedSize || null,
-        quantity: 1,
+        quantity: quantity,
       });
     }
 
     saveUserCart(cart);
     alert("🛒 Đã thêm vào giỏ hàng");
   };
+  const handleBuyNow = () => {
+  if (sizes.length > 0 && !selectedSize) {
+    alert("Vui lòng chọn size!");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/login");
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) return;
+
+  const buyNowKey = `buy_now_cart_${user._id}`;
+
+  const buyNowCart = [
+    {
+      productId: product._id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      size: selectedSize || null,
+      quantity,
+    },
+  ];
+
+  localStorage.setItem(buyNowKey, JSON.stringify(buyNowCart));
+  navigate("/pay");
+};
+
 
   /* ================= COMMENT HANDLER ================= */
   const handleSubmitComment = async () => {
@@ -174,6 +207,24 @@ function ProductDetail() {
           <p className="mt-4">
             <strong>Mô tả:</strong> {product.description || "-"}
           </p>
+            {/* QUANTITY */}
+<div className="flex items-center gap-4 mt-6">
+  <button
+    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+    className="px-4 py-2 border rounded"
+  >
+    -
+  </button>
+
+  <span className="text-lg font-semibold">{quantity}</span>
+
+  <button
+    onClick={() => setQuantity((q) => q + 1)}
+    className="px-4 py-2 border rounded"
+  >
+    +
+  </button>
+</div>
 
           {/* BUTTONS */}
           <button
@@ -188,7 +239,7 @@ function ProductDetail() {
             Thêm vào giỏ hàng
           </button>
           <button
-            onClick={() => navigate("/pay/" + product._id)}
+            onClick={handleBuyNow}
             className="w-full mt-4 py-3 rounded-lg text-white text-lg bg-green-600 hover:bg-green-700"
           >
             Mua ngay

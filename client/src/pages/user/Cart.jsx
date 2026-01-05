@@ -11,6 +11,10 @@ function Cart() {
     if (!user) return null;
     return `cart_user_${user._id}`;
   };
+  const getBuyNowKey = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user ? `buy_now_cart_${user._id}` : null;
+};
 
   const getUserCart = () => {
     const key = getCartKey();
@@ -109,11 +113,18 @@ function Cart() {
         Tổng: {total.toLocaleString()} đ
       </div>
       <button
-        onClick={() => navigate("/pay")}
-        className="mt-4 w-full py-3 rounded-lg text-white text-lg bg-green-600 hover:bg-green-700"  
-      >
-        Thanh toán
-      </button>
+  onClick={() => {
+    const buyNowKey = getBuyNowKey();
+    if (buyNowKey) {
+      localStorage.removeItem(buyNowKey);
+    }
+    navigate("/pay");
+  }}
+  className="mt-4 w-full py-3 rounded-lg text-white text-lg bg-green-600 hover:bg-green-700"
+>
+  Thanh toán
+</button>
+
     </div>
   );
 }
