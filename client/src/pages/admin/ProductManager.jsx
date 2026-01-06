@@ -65,10 +65,6 @@ function ProductManager() {
   };
 
   const handleSubmit = async (e) => {
-    if (editId && !form.image) {
-      alert("Vui lòng chọn lại ảnh, ảnh local không còn được hỗ trợ!");
-      return;
-    }
     e.preventDefault();
 
     const formData = new FormData();
@@ -91,7 +87,6 @@ function ProductManager() {
       );
     }
 
-    // ✅ CHỈ gửi color nếu có chọn
     if (form.color) {
       formData.append("color", form.color);
     }

@@ -104,36 +104,40 @@ export const updateProduct = async (req, res) => {
   try {
     const existing = await Product.findById(req.params.id);
     if (!existing)
-      return res
-        .status(404)
-        .json({ success: false, message: "Not Found" });
+      return res.status(404).json({
+        success: false,
+        message: "Not Found",
+      });
 
     const body = req.body;
 
     if (body.price !== undefined) {
       const parsedPrice = Number(body.price);
       if (isNaN(parsedPrice) || parsedPrice < 0)
-        return res
-          .status(400)
-          .json({ success: false, message: "Giá không hợp lệ" });
+        return res.status(400).json({
+          success: false,
+          message: "Giá không hợp lệ",
+        });
       body.price = parsedPrice;
     }
 
     if (body.stock !== undefined) {
       const parsedStock = Number(body.stock);
       if (isNaN(parsedStock) || parsedStock < 0)
-        return res
-          .status(400)
-          .json({ success: false, message: "Tồn kho không hợp lệ" });
+        return res.status(400).json({
+          success: false,
+          message: "Tồn kho không hợp lệ",
+        });
       body.stock = parsedStock;
     }
 
     if (body.discount !== undefined) {
       const parsedDiscount = Number(body.discount);
       if (parsedDiscount < 0 || parsedDiscount > 100)
-        return res
-          .status(400)
-          .json({ success: false, message: "Giảm giá 0–100%" });
+        return res.status(400).json({
+          success: false,
+          message: "Giảm giá 0–100%",
+        });
       body.discount = parsedDiscount;
     }
 
@@ -148,15 +152,14 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    
-if (!req.file && existing.image?.startsWith("/uploads")) {
-  return res.status(400).json({
-    success: false,
-    message: "Ảnh local không còn được hỗ trợ, vui lòng chọn lại ảnh",
-  });
-}
-
-
+    // ✅ XỬ LÝ ẢNH CLOUDINARY
+    if (req.file) {
+      const result = await uploadToCloudinary(
+        req.file.buffer,
+        "products"
+      );
+      body.image = result.secure_url;
+    }
 
     const updated = await Product.findByIdAndUpdate(
       req.params.id,
@@ -166,9 +169,13 @@ if (!req.file && existing.image?.startsWith("/uploads")) {
 
     res.json({ success: true, data: updated });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
 };
+
 
 export const deleteProduct = async (req, res) => {
   try {
