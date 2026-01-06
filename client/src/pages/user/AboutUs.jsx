@@ -3,7 +3,7 @@ function AboutUs() {
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <h1 className="text-3xl font-bold text-center text-blue-600 mb-10">
-          📜 Chính Sách Website Bán Giày Bóng Rổ
+          📜 Chính Sách của QHSHOP
         </h1>
 
         {/* 1 */}
