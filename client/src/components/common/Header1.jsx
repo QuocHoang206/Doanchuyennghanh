@@ -9,6 +9,18 @@ function Header1() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (token && user?.role === "admin") {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setRole(null);
+    setUser(null);
+    navigate("/login");
+  }
+}, []);
 
   useEffect(() => {
     if (token) {
