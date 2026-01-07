@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 
 function Countdown({ endAt }) {
   const calc = () => {
-    const diff = new Date(endAt) - new Date();
+const diff = new Date(endAt) - new Date();
     if (diff <= 0) return null;
 
     return {
-      days: Math.floor(diff / 86400000),
-      hours: Math.floor((diff / 3600000) % 24),
-      minutes: Math.floor((diff / 60000) % 60),
+      days: Math.floor(diff / (24 * 60 * 60 * 1000)),
+      hours: Math.floor((diff / (60 * 60 * 1000)) % 24),
+      minutes: Math.floor((diff / (60 * 1000)) % 60),
       seconds: Math.floor((diff / 1000) % 60),
     };
   };
@@ -16,6 +16,7 @@ function Countdown({ endAt }) {
   const [time, setTime] = useState(calc());
 
   useEffect(() => {
+    console.log("Countdown set for endAt:", endAt);
     const timer = setInterval(() => {
       setTime(calc());
     }, 1000);

@@ -111,7 +111,7 @@ export const login = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find({ role: "user" }).select("-password");
+    const users = await User.find().select("-password");
     return res.json({ users });
   } catch (err) {
     return res.status(500).json({ message: "Lỗi server", error: err.message });
@@ -140,14 +140,88 @@ export const updateUser = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
+  if (req.user._id === req.params.id) {
+    return res.status(400).json({
+      message: "Không thể tự xóa chính mình",
+    });
+  }
+
+  
+  if (req.user.role === "admin") {
+    const target = await User.findById(req.params.id);
+    if (target.role !== "user") {
+      return res.status(403).json({
+        message: "Admin không được xóa admin",
+      });
+    }
+  }
+
+  await User.findByIdAndDelete(req.params.id);
+  res.json({ message: "Xóa thành công" });
+};
+
+
+export const updateMyProfile = async (req, res) => {
   try {
-    const deleted = await User.findByIdAndDelete(req.params.id);
+    const { name, phone, address } = req.body;
 
-    if (!deleted)
-      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    const user = await User.findByIdAndUpdate(
+      req.user._id, 
+      { name, phone, address },
+      { new: true }
+    ).select("-password");
 
-    return res.json({ message: "Xóa thành công" });
+    res.json({ user });
   } catch (err) {
-    return res.status(500).json({ message: "Lỗi server", error: err.message });
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+export const getMyProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+export const updateUserRole = async (req, res) => {
+  const { role } = req.body;
+
+  if (req.user._id === req.params.id) {
+    return res.status(400).json({
+      message: "Không thể tự thay đổi quyền của chính mình",
+    });
+  }
+
+  if (req.user.role !== "superadmin") {
+    return res.status(403).json({
+      message: "Bạn không có quyền phân quyền admin",
+    });
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { role },
+    { new: true }
+  ).select("-password");
+
+  res.json({ message: "Cập nhật quyền thành công", user });
+};
+
+export const searchUsers = async (req, res) => {
+  const { q } = req.query;
+
+  try {
+    const users = await User.find({
+      $or: [
+        { name: { $regex: q, $options: "i" } },
+        { email: { $regex: q, $options: "i" } },
+      ],
+    }).select("-password");
+
+    res.json({ users });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server" });
   }
 };

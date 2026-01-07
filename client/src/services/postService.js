@@ -1,4 +1,3 @@
-
 import api from "./api.js";
 
 const postApi = {
@@ -9,7 +8,7 @@ const postApi = {
   updateProduct: (id, data) => api.put(`/products/${id}`, data),
   deleteProduct: (id) => api.delete(`/products/${id}`),
   sreachProducts: (params) => api.get("/products/search", { params }),
-  
+
   // Order APIs
   createOrder: (data) => api.post("/orders", data),
   getAllOrders: () => api.get("/orders"),
@@ -17,11 +16,18 @@ const postApi = {
   updateOrderStatus: (id, data) => api.put(`/orders/${id}/status`, data),
   cancelOrder: (id) => api.put(`/orders/${id}/cancel`),
   getCancelledOrders: () => api.get("/orders/cancelled"),
+  searchOrders: (params) => api.get("/orders/search", { params }),
 
   //user APIs
   getUsers: () => api.get("/auth/users"),
   updateUser: (id, data) => api.put(`/auth/update/${id}`, data),
   deleteUser: (id) => api.delete(`/auth/delete/${id}`),
+  updateUserRole: (id, data) => api.put(`/auth/role/${id}`, data),
+  searchUsers: (params) => api.get("/auth/search", { params }),
+
+  // Profile APIs
+  updateMyProfile: (data) => api.put("/auth/me", data),
+  getMyProfile: () => api.get("/auth/me"),
 
   // System Setting APIs
   getSystemSetting: () => api.get("/settings"),

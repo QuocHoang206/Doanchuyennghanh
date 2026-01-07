@@ -22,6 +22,7 @@ function Blackfriday() {
       setProducts(res.data.data.filter((p) => p.discount > 0));
     });
     postApi.getSystemSetting().then((res) => {
+      console.log("Loaded system setting:", res.data.data);
       setSetting(res.data.data);
     });
   }, []);

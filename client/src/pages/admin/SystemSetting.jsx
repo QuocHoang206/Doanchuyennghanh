@@ -17,14 +17,16 @@ function SystemSetting() {
   useEffect(() => {
     postApi.getSystemSetting().then((res) => {
       const data = res.data.data;
-      setSetting({
+      const set = {
         ...data,
         discount: {
           ...data.discount,
           startAt: data.discount?.startAt?.slice(0, 16) || "",
           endAt: data.discount?.endAt?.slice(0, 16) || "",
         },
-      });
+      }
+      console.log("Loaded system setting:", set);
+      setSetting(set);
     });
   }, []);
 
@@ -53,12 +55,28 @@ function SystemSetting() {
     setSetting(newSetting);
   };
 
-  const handleSave = async () => {
-    setLoading(true);
-    await postApi.updateSystemSetting(setting, authConfig);
-    setLoading(false);
-    alert("Lưu cấu hình thành công!");
+const handleSave = async () => {
+  setLoading(true);
+
+  const payload = {
+    ...setting,
+    discount: {
+      ...setting.discount,
+      startAt: setting.discount.startAt
+        ? new Date(setting.discount.startAt).toISOString()
+        : null,
+      endAt: setting.discount.endAt
+        ? new Date(setting.discount.endAt).toISOString()
+        : null,
+    },
   };
+
+  await postApi.updateSystemSetting(payload, authConfig);
+
+  setLoading(false);
+  alert("Lưu cấu hình thành công!");
+};
+
 
   const handleDeleteBanner = async (index) => {
     const list = setting.banner.list.filter((_, i) => i !== index);

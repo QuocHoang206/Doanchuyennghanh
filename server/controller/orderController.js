@@ -201,3 +201,26 @@ export const completeOrder = async (req, res) => {
   }
 };
 
+export const searchOrders = async (req, res) => {
+  const { q, cancelled } = req.query;
+
+  try {
+    const condition = {
+      $or: [
+        { email: { $regex: q, $options: "i" } },
+        { name: { $regex: q, $options: "i" } },
+        { status: { $regex: q, $options: "i" } },
+        { paymentMethod: { $regex: q, $options: "i" } },
+      ],
+    };
+
+    if (cancelled === "true") {
+      condition.status = "Đã hủy";
+    }
+
+    const orders = await Order.find(condition).sort({ createdAt: -1 });
+    res.json({ success: true, data: orders });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};

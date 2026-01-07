@@ -28,7 +28,7 @@ function Login() {
 
       const redirectTo = location.state?.redirectTo;
 
-      if (res.data.user.role === "admin") {
+      if (res.data.user.role === "admin" || res.data.user.role === "superadmin") {
         navigate("/admin");
       } else if (redirectTo) {
         navigate(redirectTo, { replace: true });

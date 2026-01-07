@@ -6,21 +6,11 @@ function Header1() {
   const [user, setUser] = useState(null);
   const [openProfile, setOpenProfile] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const isAdmin = role === "admin" || role === "superadmin";
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  if (token && user?.role === "admin") {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setRole(null);
-    setUser(null);
-    navigate("/login");
-  }
-}, []);
+  
 
   useEffect(() => {
     if (token) {
@@ -41,27 +31,30 @@ useEffect(() => {
     }
   }, [token]);
 
- 
   useEffect(() => {
-    if (!user) {
-      setCartCount(0);
-      return;
-    }
+  if (!user) {
+    setCartCount(0);
+    return;
+  }
 
-    const cartKey = `cart_user_${user._id}`;
+  const cartKey = `cart_user_${user._id}`;
 
-    const loadCart = () => {
-      const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-      const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-      setCartCount(total);
-    };
+  const loadCart = () => {
+    const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    setCartCount(total);
+  };
 
-    loadCart();
+  loadCart();
 
-  
-    window.addEventListener("storage", loadCart);
-    return () => window.removeEventListener("storage", loadCart);
-  }, [user]);
+  window.addEventListener("storage", loadCart);
+  window.addEventListener("cart-updated", loadCart);
+
+  return () => {
+    window.removeEventListener("storage", loadCart);
+    window.removeEventListener("cart-updated", loadCart);
+  };
+}, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -75,12 +68,10 @@ useEffect(() => {
   return (
     <header className="bg-white shadow-md relative">
       <div className="flex items-center justify-between px-6 py-3">
-
         <Link to="/" className="text-2xl font-bold text-blue-800">
           QHSHOP
         </Link>
 
-     
         <nav className="hidden md:flex space-x-8 text-gray-700 font-medium">
           <Link to="/" className="hover:text-blue-700">
             Trang chính
@@ -96,10 +87,8 @@ useEffect(() => {
           </Link>
         </nav>
 
-        
         <div className="flex items-center gap-6 relative">
-         
-          {token && role !== "admin" && (
+          {token && !isAdmin && (
             <div
               onClick={() => navigate("/cart")}
               className="relative cursor-pointer"
@@ -131,12 +120,6 @@ useEffect(() => {
             </div>
           )}
 
-         
-
-
-
-
-
           {!token ? (
             <button
               onClick={() => navigate("/login")}
@@ -167,7 +150,7 @@ useEffect(() => {
                   >
                     Thông tin cá nhân
                   </Link>
-                  {role !== "admin" && (
+                  {role !== "admin" && role !== "superadmin" && (
                     <Link
                       to="/order"
                       onClick={() => setOpenProfile(false)}
@@ -177,7 +160,7 @@ useEffect(() => {
                     </Link>
                   )}
 
-                  {role === "admin" && (
+                  {(role === "admin" || role === "superadmin") && (
                     <Link
                       to="/admin"
                       onClick={() => setOpenProfile(false)}

@@ -50,9 +50,20 @@ function OrderManager() {
     loadOrders();
   };
 
-  const filteredOrders = orders.filter((o) =>
-    o.email.toLowerCase().includes(searchEmail.toLowerCase())
-  );
+  const handleSearch = (e) => {
+  const q = e.target.value;
+  setSearchEmail(q);
+
+  if (!q.trim()) {
+    loadOrders();
+    return;
+  }
+
+  postApi
+    .searchOrders({ q })
+    .then((res) => setOrders(res.data.data))
+    .catch(console.log);
+};
 
   return (
     <div className="p-8">
@@ -60,17 +71,18 @@ function OrderManager() {
         Quản lý đơn hàng
       </h1>
 
-      <div className="mb-4 flex justify-end">
-        <input
-          type="text"
-          placeholder=" Tìm theo email..."
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-          className="border px-4 py-2 rounded w-80"
-        />
-      </div>
+      <input
+  type="text"
+  placeholder="Tìm theo email, tên, trạng thái..."
+  value={searchEmail}
+  onChange={handleSearch}
+  className="border px-4 py-2 rounded w-80"
+/>
+
 
       <table className="w-full border bg-white shadow">
+
+        
         <thead>
           <tr className="bg-blue-600 text-white">
             <th className="p-3 border">Khách hàng</th>
@@ -82,7 +94,7 @@ function OrderManager() {
         </thead>
 
         <tbody>
-          {filteredOrders.map((o) => (
+          {orders.map((o) => (
             <tr key={o._id} className="text-center border">
               <td className="p-3 border">
                 {o.name}

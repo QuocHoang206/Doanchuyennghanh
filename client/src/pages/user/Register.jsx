@@ -18,15 +18,32 @@ function Register() {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm({
+      ...form,
+      [name]: name === "email" ? value.toLowerCase() : value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!form.name || !form.email || !form.phone || !form.address) {
-      setError("Vui lòng nhập đầy đủ thông tin");
+    if (form.name) {
+      setError("Vui lòng nhập tên đầy đủ");
+      return;
+    }
+    if (form.email ) {
+      setError("Vui lòng nhập email");
+      return;
+    }
+    if (form.phone) {
+      setError("Vui lòng nhập số điện thoại");
+      return;
+    }
+    if (form.address) {
+      setError("Vui lòng nhập địa chỉ");
       return;
     }
 
@@ -45,7 +62,7 @@ function Register() {
 
       await authApi.register({
         name: form.name,
-        email: form.email,
+        email: form.email.toLowerCase(),
         phone: form.phone,
         address: form.address,
         password: form.password,

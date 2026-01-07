@@ -1,31 +1,95 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import postApi from "../../services/postService";
 
 function Profile() {
-  const { id } = useParams();
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
-  const storedUser = JSON.parse(localStorage.getItem("user"));
 
   const [user, setUser] = useState(null);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+  const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  // ✅ LOAD PROFILE TỪ SERVER
   useEffect(() => {
-    if (!token || !storedUser) {
+    if (!token) {
       navigate("/login");
       return;
     }
 
-    if (storedUser._id !== id) {
-      navigate("/");
-      return;
-    }
+    postApi
+      .getMyProfile()
+      .then((res) => {
+        setUser(res.data.user);
+        setForm({
+          name: res.data.user.name || "",
+          email: res.data.user.email || "",
+          phone: res.data.user.phone || "",
+          address: res.data.user.address || "",
+        });
 
-    setUser(storedUser);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, navigate, token]);
+        // sync lại localStorage
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      })
+      .catch((err) => {
+  if (err.response?.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  } else {
+    alert("Lỗi tải thông tin cá nhân");
+  }
+});
+
+  }, []);
 
   if (!user) return null;
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // ✅ UPDATE PROFILE
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const res = await postApi.updateMyProfile({
+        name: form.name,
+        phone: form.phone,
+        address: form.address,
+      });
+
+      const updatedUser = {
+        ...user, // giữ _id, email, role
+        name: res.data.user.name,
+        phone: res.data.user.phone,
+        address: res.data.user.address,
+      };
+
+      setUser(updatedUser);
+      setForm({
+        ...form,
+        name: updatedUser.name,
+        phone: updatedUser.phone,
+        address: updatedUser.address,
+      });
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setEditing(false);
+
+      alert("Cập nhật thành công!");
+    } catch (err) {
+      alert("Cập nhật thất bại" + (err.response?.data?.message || ""));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
@@ -37,18 +101,18 @@ function Profile() {
         <div>
           <label className="font-semibold block mb-1">Họ tên</label>
           <input
-            type="text"
-            value={user.name}
-            disabled
-            className="w-full border p-3 rounded bg-gray-100"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            disabled={!editing}
+            className="w-full border p-3 rounded"
           />
         </div>
 
         <div>
           <label className="font-semibold block mb-1">Email</label>
           <input
-            type="email"
-            value={user.email}
+            value={form.email}
             disabled
             className="w-full border p-3 rounded bg-gray-100"
           />
@@ -57,22 +121,57 @@ function Profile() {
         <div>
           <label className="font-semibold block mb-1">Số điện thoại</label>
           <input
-            type="text"
-            value={user.phone}
-            disabled
-            className="w-full border p-3 rounded bg-gray-100"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            disabled={!editing}
+            className="w-full border p-3 rounded"
           />
         </div>
 
         <div>
           <label className="font-semibold block mb-1">Địa chỉ</label>
           <input
-            type="text"
-            value={user.address}
-            disabled
-            className="w-full border p-3 rounded bg-gray-100"
+            name="address"
+            value={form.address}
+            onChange={handleChange}
+            disabled={!editing}
+            className="w-full border p-3 rounded"
           />
         </div>
+
+        {!editing ? (
+          <button
+            onClick={() => setEditing(true)}
+            className="w-full py-3 bg-blue-600 text-white rounded"
+          >
+            Đổi thông tin
+          </button>
+        ) : (
+          <div className="flex gap-4">
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="flex-1 py-3 bg-green-600 text-white rounded"
+            >
+              {loading ? "Đang lưu..." : "Lưu"}
+            </button>
+            <button
+              onClick={() => {
+                setEditing(false);
+                setForm({
+                  name: user.name,
+                  email: user.email,
+                  phone: user.phone,
+                  address: user.address,
+                });
+              }}
+              className="flex-1 py-3 bg-gray-400 text-white rounded"
+            >
+              Hủy
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

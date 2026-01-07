@@ -9,9 +9,10 @@ function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
-
+  
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     postApi
@@ -61,71 +62,84 @@ function ProductDetail() {
   };
 
   const handleAddToCart = () => {
-    if (sizes.length > 0 && !selectedSize) {
-      alert("Vui lòng chọn size!");
-      return;
-    }
+  if (sizes.length > 0 && !selectedSize) {
+    alert("Vui lòng chọn size!");
+    return;
+  }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+  if (user?.role === "admin") {
+    alert("Admin không được phép mua hàng");
+    return;
+  }
 
-    const cart = getUserCart();
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/login");
+    return;
+  }
 
-    const index = cart.findIndex(
-      (item) =>
-        item.productId === product._id && item.size === (selectedSize || null)
-    );
+  const cart = getUserCart();
 
-    if (index !== -1) {
-      cart[index].quantity += quantity;
-    } else {
-      cart.push({
-        productId: product._id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-        size: selectedSize || null,
-        quantity: quantity,
-      });
-    }
+  const index = cart.findIndex(
+    (item) =>
+      item.productId === product._id &&
+      item.size === (selectedSize || null)
+  );
 
-    saveUserCart(cart);
-    alert("Đã thêm vào giỏ hàng");
-  };
-  const handleBuyNow = () => {
-    if (sizes.length > 0 && !selectedSize) {
-      alert("Vui lòng chọn size!");
-      return;
-    }
+  if (index !== -1) {
+    cart[index].quantity += quantity;
+  } else {
+    cart.push({
+      productId: product._id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      size: selectedSize || null,
+      quantity,
+    });
+  }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+  saveUserCart(cart);
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return;
+  // 🔥 BẮT BUỘC – cập nhật header ngay
+  window.dispatchEvent(new Event("cart-updated"));
 
-    const buyNowKey = `buy_now_cart_${user._id}`;
+  alert("Đã thêm vào giỏ hàng");
+};
 
-    const buyNowCart = [
-      {
-        productId: product._id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-        size: selectedSize || null,
-        quantity,
-      },
-    ];
+ const handleBuyNow = () => {
+  if (sizes.length > 0 && !selectedSize) {
+    alert("Vui lòng chọn size!");
+    return;
+  }
 
-    localStorage.setItem(buyNowKey, JSON.stringify(buyNowCart));
-    navigate("/pay");
-  };
+  if (user?.role === "admin") {
+    alert("Admin không được phép mua hàng");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/login");
+    return;
+  }
+
+  const buyNowKey = `buy_now_cart_${user._id}`;
+
+  const buyNowCart = [
+    {
+      productId: product._id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      size: selectedSize || null,
+      quantity,
+    },
+  ];
+
+  localStorage.setItem(buyNowKey, JSON.stringify(buyNowCart));
+  navigate("/pay");
+};
 
   const handleSubmitComment = async () => {
     const token = localStorage.getItem("token");
@@ -145,7 +159,7 @@ function ProductDetail() {
 
     setCommentText("");
   };
-
+  
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -208,17 +222,15 @@ function ProductDetail() {
             </button>
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            disabled={sizes.length > 0 && !selectedSize}
-            className={`w-full mt-6 py-3 rounded-lg text-white text-lg ${
-              sizes.length === 0 || selectedSize
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Thêm vào giỏ hàng
-          </button>
+          {user?.role !== "admin" && (
+  <button
+    onClick={handleAddToCart}
+    className="w-full mt-4 py-3 rounded-lg text-white text-lg bg-blue-600 hover:bg-blue-700"
+  >
+    Thêm vào giỏ
+  </button>
+)}
+
           <button
             onClick={handleBuyNow}
             className="w-full mt-4 py-3 rounded-lg text-white text-lg bg-green-600 hover:bg-green-700"
