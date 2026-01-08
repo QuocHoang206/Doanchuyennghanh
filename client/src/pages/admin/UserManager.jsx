@@ -6,7 +6,6 @@ function UserManager() {
   const [editUser, setEditUser] = useState(null);
   const [showAdminOnly, setShowAdminOnly] = useState(false);
 
-  // ===== SAFE TOKEN PARSE =====
   let currentUserId = null;
   let currentUserRole = null;
 
@@ -27,7 +26,6 @@ function UserManager() {
     password: "",
   });
 
-  // ===== LOAD USERS =====
   const loadUsers = () => {
     postApi
       .getUsers()
@@ -39,7 +37,6 @@ function UserManager() {
     loadUsers();
   }, []);
 
-  // ===== DELETE USER =====
   const handleDelete = (id) => {
     if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
 
@@ -52,7 +49,6 @@ function UserManager() {
       .catch((err) => console.log(err));
   };
 
-  // ===== EDIT USER =====
   const handleEdit = (u) => {
     setEditUser(u._id);
     setForm({
@@ -75,7 +71,6 @@ function UserManager() {
       .catch((err) => console.log(err));
   };
 
-  // ===== CHANGE ROLE (SUPERADMIN ONLY) =====
   const handleRole = (id, role) => {
     if (!confirm("Bạn có chắc muốn thay đổi quyền người dùng?")) return;
 
@@ -176,7 +171,6 @@ const handleSearch = (e) => {
                       </button>
                     )}
 
-                  {/* ===== DELETE (SUPERADMIN ONLY) ===== */}
                   {currentUserRole === "superadmin" &&
                     u._id !== currentUserId && (
                       <button
@@ -191,15 +185,12 @@ const handleSearch = (e) => {
             ))}
         </tbody>
       </table>
-      {/* ===== EDIT MODAL ===== */}
       {editUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative">
             <h2 className="text-xl font-bold mb-4 text-blue-700">
               Sửa thông tin người dùng
             </h2>
-
-            {/* Close icon */}
             <button
               onClick={() => setEditUser(null)}
               className="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl"

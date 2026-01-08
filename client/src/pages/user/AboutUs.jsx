@@ -6,7 +6,6 @@ function AboutUs() {
           📜 Chính Sách của QHSHOP
         </h1>
 
-        {/* 1 */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold border-l-4 border-blue-500 pl-3 mb-3">
             1. Chính sách chung
@@ -21,7 +20,6 @@ function AboutUs() {
           </p>
         </section>
 
-        {/* 2 */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold border-l-4 border-blue-500 pl-3 mb-3">
             2. Chính sách sản phẩm
@@ -33,7 +31,6 @@ function AboutUs() {
           </ul>
         </section>
 
-        {/* 3 */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold border-l-4 border-blue-500 pl-3 mb-3">
             3. Chính sách giá & thanh toán
@@ -52,7 +49,6 @@ function AboutUs() {
           </ul>
         </section>
 
-        {/* 4 */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold border-l-4 border-blue-500 pl-3 mb-3">
             4. Chính sách giao hàng
@@ -63,7 +59,6 @@ function AboutUs() {
           </ul>
         </section>
 
-        {/* 5 */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold border-l-4 border-blue-500 pl-3 mb-3">
             5. Chính sách đổi trả
@@ -75,7 +70,6 @@ function AboutUs() {
           </ul>
         </section>
 
-        {/* 6 */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold border-l-4 border-blue-500 pl-3 mb-3">
             6. Bảo mật thông tin
@@ -86,7 +80,6 @@ function AboutUs() {
           </p>
         </section>
 
-        {/* 7 */}
         <section>
           <h2 className="text-xl font-semibold border-l-4 border-blue-500 pl-3 mb-3">
             7. Thông tin liên hệ

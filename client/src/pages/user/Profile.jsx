@@ -16,7 +16,6 @@ function Profile() {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ LOAD PROFILE TỪ SERVER
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -33,8 +32,6 @@ function Profile() {
           phone: res.data.user.phone || "",
           address: res.data.user.address || "",
         });
-
-        // sync lại localStorage
         localStorage.setItem("user", JSON.stringify(res.data.user));
       })
       .catch((err) => {
@@ -55,7 +52,6 @@ function Profile() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ UPDATE PROFILE
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -66,7 +62,7 @@ function Profile() {
       });
 
       const updatedUser = {
-        ...user, // giữ _id, email, role
+        ...user,
         name: res.data.user.name,
         phone: res.data.user.phone,
         address: res.data.user.address,

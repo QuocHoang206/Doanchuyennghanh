@@ -123,7 +123,6 @@ function Pay() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-10">
-      {/* ================= LEFT ================= */}
       <div className="bg-white p-6 rounded shadow">
         <h2 className="text-2xl font-semibold mb-4">Thông tin giao hàng</h2>
 

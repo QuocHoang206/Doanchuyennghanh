@@ -14,7 +14,6 @@ function Home() {
     bags: "Balo",
   };
 
-  /* ================= DISCOUNT CHECK ================= */
   const isDiscountActive = () => {
     if (!setting?.discount?.enabled) return false;
     const now = new Date();
@@ -24,7 +23,6 @@ function Home() {
     );
   };
 
-  /* ================= LOAD DATA ================= */
   useEffect(() => {
     postApi.getProducts().then((res) => {
       setProducts(res.data.data);
@@ -37,7 +35,6 @@ function Home() {
     });
   }, []);
 
-  /* ================= PRICE ================= */
   const getFinalPrice = (p) => {
     if (isDiscountActive() && p.discount > 0) {
       return Math.round((p.price * (100 - p.discount)) / 100);

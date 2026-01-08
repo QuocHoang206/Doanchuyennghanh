@@ -101,7 +101,6 @@ function ProductDetail() {
 
   saveUserCart(cart);
 
-  // 🔥 BẮT BUỘC – cập nhật header ngay
   window.dispatchEvent(new Event("cart-updated"));
 
   alert("Đã thêm vào giỏ hàng");

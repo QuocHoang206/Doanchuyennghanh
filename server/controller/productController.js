@@ -152,7 +152,6 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    // ✅ XỬ LÝ ẢNH CLOUDINARY
     if (req.file) {
       const result = await uploadToCloudinary(
         req.file.buffer,

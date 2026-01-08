@@ -58,7 +58,6 @@ export const uploadBanner = async (req, res) => {
       return res.status(404).json({ message: "System setting not found" });
     }
 
-    // ✅ UPLOAD CLOUDINARY
     const result = await uploadToCloudinary(
       req.file.buffer,
       "banners"
@@ -73,7 +72,7 @@ export const uploadBanner = async (req, res) => {
 
     res.json({
       success: true,
-      image: result.secure_url, // ✅ URL CLOUDINARY
+      image: result.secure_url,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

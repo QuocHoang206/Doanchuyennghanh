@@ -35,7 +35,6 @@ function Cart() {
       return;
     }
     setCart(getUserCart());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
