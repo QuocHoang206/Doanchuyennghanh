@@ -15,31 +15,31 @@ function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+      e.preventDefault();
 
-    try {
-      const res = await authApi.login(form);
+      try {
+        const res = await authApi.login(form);
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      
-      alert("Login successful!");
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        
+        alert("Login successful!");
 
-      const redirectTo = location.state?.redirectTo;
+        const redirectTo = location.state?.redirectTo;
 
-      if (res.data.user.role === "admin" || res.data.user.role === "superadmin") {
-        navigate("/admin");
-      } else if (redirectTo) {
-        navigate(redirectTo, { replace: true });
-      } else {
-        navigate("/");
+        if (res.data.user.role === "admin" || res.data.user.role === "superadmin") {
+          navigate("/admin");
+        } else if (redirectTo) {
+          navigate(redirectTo, { replace: true });
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        console.log(error);
+        setErr(error.response?.data?.message || "Login failed");
       }
-    } catch (error) {
-      console.log(error);
-      setErr(error.response?.data?.message || "Login failed");
-    }
-  };
+    };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

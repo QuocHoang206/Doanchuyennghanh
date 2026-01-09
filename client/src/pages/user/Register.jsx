@@ -30,19 +30,19 @@ function Register() {
     e.preventDefault();
     setError("");
 
-    if (form.name) {
+    if (!form.name) {
       setError("Vui lòng nhập tên đầy đủ");
       return;
     }
-    if (form.email ) {
+    if (!form.email) {
       setError("Vui lòng nhập email");
       return;
     }
-    if (form.phone) {
+    if (!form.phone) {
       setError("Vui lòng nhập số điện thoại");
       return;
     }
-    if (form.address) {
+    if (!form.address) {
       setError("Vui lòng nhập địa chỉ");
       return;
     }

@@ -5,6 +5,7 @@ function Cart() {
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
 
+  
   const getCartKey = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return null;
@@ -35,6 +36,8 @@ function Cart() {
       return;
     }
     setCart(getUserCart());
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
